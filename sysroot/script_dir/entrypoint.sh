@@ -21,8 +21,17 @@
 # THE SOFTWARE.
 #
 
+# Check if the project_dir/ is correctly mounted before proceeding further
+[[ -z $(ls -1 /project_dir) ]] && echo -e "Error: Container's '/project_dir' must be mounted from a project root on host filesystem.\n       See 'script/dockerized.sh' in the Urho3D project as use case sample." && exit 1
+
+# Delay updating the symlinks to runtime after all compiler toolchains have been installed
+sudo /usr/sbin/update-ccache-symlinks
+
 # Allow 'urho3d' user to write into 'ccache_dir' docker volume
 sudo chmod o+w /ccache_dir
+
+# Useful when executing 'bash' command
+sudo sed -i '/^#.*history-search/s/^# //' /etc/inputrc
 
 # Execute the command chain
 exec "$@"

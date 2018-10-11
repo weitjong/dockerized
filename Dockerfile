@@ -31,8 +31,7 @@ ENV PATH=/usr/lib/ccache:$PATH \
     HOST_UID=1000 HOST_GID=1000
 
 RUN groupadd -g $HOST_GID urho3d && useradd -u $HOST_UID -g $HOST_GID -m urho3d \
-    && apt-get update && apt-get install -y build-essential ccache cmake doxygen git graphviz rake sudo \
-    && /usr/sbin/update-ccache-symlinks
+    && apt-get update && apt-get install -y build-essential ccache cmake doxygen git graphviz rake sudo
 
 VOLUME /ccache_dir
 VOLUME /project_dir
@@ -41,6 +40,6 @@ WORKDIR /project_dir
 COPY sysroot/ /
 
 ENTRYPOINT ["/script_dir/entrypoint.sh"]
-CMD rake cmake && rake make
+CMD bash
 
 # vi: set ts=4 sw=4 expandtab:
