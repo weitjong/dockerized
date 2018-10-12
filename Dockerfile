@@ -40,6 +40,6 @@ WORKDIR /project_dir
 COPY sysroot/ /
 
 ENTRYPOINT ["/script_dir/entrypoint.sh"]
-CMD bash
+CMD ["/bin/bash"]
 
 # vi: set ts=4 sw=4 expandtab:
