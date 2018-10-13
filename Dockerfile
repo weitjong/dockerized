@@ -30,16 +30,19 @@ ENV PATH=/usr/lib/ccache:$PATH \
     USE_CCACHE=1 CCACHE_SLOPPINESS=pch_defines,time_macros CCACHE_COMPRESS=1 CCACHE_DIR=/ccache_dir \
     HOST_UID=1000 HOST_GID=1000
 
-RUN groupadd -g $HOST_GID urho3d && useradd -u $HOST_UID -g $HOST_GID -m urho3d \
-    && apt-get update && apt-get install -y build-essential ccache cmake doxygen git graphviz rake sudo
+RUN groupadd -g $HOST_GID urho3d && useradd -u $HOST_UID -g $HOST_GID -s /bin/bash urho3d \
+    && apt-get update && apt-get install -y build-essential ccache cmake doxygen git graphviz rake sudo wget
 
-VOLUME /ccache_dir
 VOLUME /project_dir
+VOLUME /ccache_dir
+VOLUME /home/urho3d
+
 WORKDIR /project_dir
 
 COPY sysroot/ /
 
 ENTRYPOINT ["/script_dir/entrypoint.sh"]
+
 CMD ["/bin/bash"]
 
 # vi: set ts=4 sw=4 expandtab:

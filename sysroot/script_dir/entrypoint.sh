@@ -32,8 +32,8 @@ fi
 # Delay updating the symlinks to runtime after all compiler toolchains have been installed
 sudo /usr/sbin/update-ccache-symlinks
 
-# Allow 'urho3d' user to write into 'ccache_dir' docker volume
-sudo chmod o+w /ccache_dir
+# Allow 'urho3d' user to write into mounted docker volumes
+sudo chmod o+w /ccache_dir /home/urho3d
 
 # Execute the command chain
 exec "$@"
