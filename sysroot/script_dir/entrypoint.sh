@@ -22,7 +22,7 @@
 #
 
 if [[ $1 == *bash ]]; then
-    # Useful when executing 'bash' command
+    # When executing 'bash' command interactively, enable history-search bash completion
     sudo sed -i '/^#.*history-search/s/^# //' /etc/inputrc
 else
     # Check if the project_dir/ is correctly mounted before proceeding further
@@ -33,7 +33,7 @@ fi
 sudo /usr/sbin/update-ccache-symlinks
 
 # Allow 'urho3d' user to write into mounted docker volumes
-sudo chmod o+w /ccache_dir /home/urho3d
+sudo chmod o+w /home/urho3d
 
 # Execute the command chain
 exec "$@"
