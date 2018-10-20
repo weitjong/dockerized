@@ -35,5 +35,8 @@ sudo /usr/sbin/update-ccache-symlinks
 # Allow 'urho3d' user to write into mounted docker volumes
 sudo chmod o+w /home/urho3d
 
+# Ensure ccache is being found first
+PATH=/usr/lib/ccache:$PATH
+
 # Execute the command chain
 exec "$@"

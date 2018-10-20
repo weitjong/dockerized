@@ -26,8 +26,7 @@ LABEL description="Dockerized build environment for Urho3D" \
       source-repo=https://github.com/urho3d/dockerized \
       binary-repo=https://hub.docker.com/u/urho3d
 
-ENV PATH=/usr/lib/ccache:$PATH \
-    USE_CCACHE=1 CCACHE_SLOPPINESS=pch_defines,time_macros CCACHE_COMPRESS=1 \
+ENV USE_CCACHE=1 CCACHE_SLOPPINESS=pch_defines,time_macros CCACHE_COMPRESS=1 \
     URHO3D_LUAJIT=1 URHO3D_LUAJIT_AMALG=1 \
     HOST_UID=1000 HOST_GID=1000
 
