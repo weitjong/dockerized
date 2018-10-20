@@ -28,6 +28,7 @@ LABEL description="Dockerized build environment for Urho3D" \
 
 ENV PATH=/usr/lib/ccache:$PATH \
     USE_CCACHE=1 CCACHE_SLOPPINESS=pch_defines,time_macros CCACHE_COMPRESS=1 \
+    URHO3D_LUAJIT=1 URHO3D_LUAJIT_AMALG=1 \
     HOST_UID=1000 HOST_GID=1000
 
 RUN groupadd -g $HOST_GID urho3d && useradd -u $HOST_UID -g $HOST_GID -s /bin/bash urho3d \
