@@ -20,7 +20,7 @@
 # THE SOFTWARE.
 #
 
-FROM ubuntu:18.04
+FROM ubuntu:latest
 
 LABEL description="Dockerized build environment for Urho3D" \
       source-repo=https://github.com/urho3d/dockerized \
