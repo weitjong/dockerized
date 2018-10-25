@@ -21,13 +21,11 @@
 # THE SOFTWARE.
 #
 
-if [[ $1 == *bash ]]; then
-    # When executing 'bash' command interactively, enable history-search bash completion
-    sudo sed -i '/^#.*history-search/s/^# //' /etc/inputrc
-else
-    # Check if the project_dir/ is correctly mounted before proceeding further
-    [[ -z $(ls -1 /project_dir) ]] && echo -e "Error: Container's '/project_dir' must be mounted from a project root on host filesystem.\n       See 'script/dockerized.sh' in the Urho3D project as use case sample." && exit 1
-fi
+# Check if the project_dir/ is correctly mounted before proceeding further
+[[ -z $(ls -1 /project_dir) ]] && echo -e "Error: Container's '/project_dir' must be mounted from a project root on host filesystem.\n       See 'script/dockerized.sh' in the Urho3D project as use case sample." && exit 1
+
+# Enable history-search in bash completion
+sudo sed -i '/^#.*history-search/s/^# //' /etc/inputrc
 
 # Delay updating the symlinks to runtime after all compiler toolchains have been installed
 sudo /usr/sbin/update-ccache-symlinks
@@ -40,3 +38,5 @@ PATH=/usr/lib/ccache:$PATH
 
 # Execute the command chain
 exec "$@"
+
+# vi: set ts=4 sw=4 expandtab:

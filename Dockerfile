@@ -31,7 +31,7 @@ ENV USE_CCACHE=1 CCACHE_SLOPPINESS=pch_defines,time_macros CCACHE_COMPRESS=1 \
     HOST_UID=1000 HOST_GID=1000
 
 RUN groupadd -g $HOST_GID urho3d && useradd -u $HOST_UID -g $HOST_GID -s /bin/bash urho3d \
-    && apt-get update && apt-get install -y build-essential ccache cmake doxygen git graphviz rake sudo wget
+    && apt-get update && apt-get install -y build-essential ccache cmake doxygen git graphviz rake sudo vim wget
 
 VOLUME /home/urho3d
 VOLUME /project_dir
