@@ -25,18 +25,21 @@
 [[ -z $(ls -1 /project_dir) ]] && echo -e "Error: Container's '/project_dir' must be mounted from a project root on host filesystem.\n       See 'script/dockerized.sh' in the Urho3D project as use case sample." && exit 1
 
 # Enable history-search in bash completion
-sudo sed -i '/^#.*history-search/s/^# //' /etc/inputrc
+sed -i '/^#.*history-search/s/^# //' /etc/inputrc
 
 # Delay updating the symlinks to runtime after all compiler toolchains have been installed
-sudo /usr/sbin/update-ccache-symlinks
+/usr/sbin/update-ccache-symlinks
+
+# Delay group and user creation to runtime to match the host GID and UID
+groupadd -g $HOST_GID urho3d && useradd -u $HOST_UID -g $HOST_GID -s /bin/bash urho3d
 
 # Allow 'urho3d' user to write into mounted docker volumes
-sudo chmod o+w /home/urho3d
+chmod o+w /home/urho3d
 
 # Ensure ccache is being found first
 PATH=/usr/lib/ccache:$PATH
 
-# Execute the command chain
-exec "$@"
+# Execute the command chain as urho3d
+runuser -u urho3d -- "$@"
 
 # vi: set ts=4 sw=4 expandtab:
