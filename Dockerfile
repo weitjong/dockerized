@@ -30,12 +30,17 @@ ENV USE_CCACHE=1 CCACHE_SLOPPINESS=pch_defines,time_macros CCACHE_COMPRESS=1 \
     URHO3D_LUAJIT=1 \
     HOST_UID=1000 HOST_GID=1000
 
-RUN apt-get update && apt-get install -y build-essential ccache cmake doxygen git graphviz g++-multilib rake sudo vim wget
+RUN apt-get update && apt-get install -y \
+    # Essential
+    build-essential ccache cmake git g++-multilib \
+    \
+    # Documentation
+    doxygen graphviz \
+    \
+    # Misc.
+    rake sudo vim wget
 
 VOLUME /home/urho3d
-VOLUME /project_dir
-
-WORKDIR /project_dir
 
 COPY sysroot/ /
 
