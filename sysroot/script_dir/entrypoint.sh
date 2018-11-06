@@ -22,8 +22,8 @@
 #
 
 # Check if the host project root is correctly mounted before proceeding further
-if [[ $PROJECT_DIR && -z $(ls -1 $PROJECT_DIR 2>/dev/null) ]]; then
-    echo -e "Error: Container's project root must be mounted from host filesystem.
+if [[ ! $PROJECT_DIR || -z $(ls -1 $PROJECT_DIR 2>/dev/null) ]]; then
+    echo -e "Error: PROJECT_DIR env-var must be set to project root directory from host.
        See 'script/dockerized.sh' in the Urho3D project as use case sample."
     exit 1
 fi
