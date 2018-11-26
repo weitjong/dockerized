@@ -26,6 +26,8 @@ LABEL description="Dockerized build environment for Urho3D" \
       source-repo=https://github.com/urho3d/dockerized \
       binary-repo=https://hub.docker.com/u/urho3d
 
+ARG lang=en_US.UTF-8
+
 ENV USE_CCACHE=1 CCACHE_SLOPPINESS=pch_defines,time_macros CCACHE_COMPRESS=1 \
     URHO3D_LUAJIT=1 \
     HOST_UID=1000 HOST_GID=1000
@@ -35,10 +37,13 @@ RUN apt-get update && apt-get install -y \
     build-essential ccache cmake git g++-multilib \
     \
     # Documentation
-    doxygen graphviz \
+    doxygen graphviz locales \
     \
     # Misc.
-    rake sudo vim wget
+    rake rsync sudo vim wget \
+    \
+    # Setup default locale
+    && locale-gen $lang && update-locale LANG=$lang
 
 VOLUME /home/urho3d
 

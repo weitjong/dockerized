@@ -43,6 +43,9 @@ chmod o+w /home/urho3d
 # Ensure ccache is being found first
 PATH=/usr/lib/ccache:$PATH
 
+# Use the built-in locale from the docker image
+set -a && . /etc/default/locale && set +a
+
 # Execute the command chain (relative to project root) as urho3d
 cd $PROJECT_DIR && runuser -u urho3d -- "$@"
 
