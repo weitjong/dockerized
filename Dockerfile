@@ -27,6 +27,7 @@ LABEL description="Dockerized build environment for Urho3D" \
       binary-repo=https://hub.docker.com/u/urho3d
 
 ARG lang=en_US.UTF-8
+ARG cmake_version=3.14.5
 
 ENV USE_CCACHE=1 CCACHE_SLOPPINESS=pch_defines,time_macros CCACHE_COMPRESS=1 \
     URHO3D_LUAJIT=1 \
@@ -34,13 +35,16 @@ ENV USE_CCACHE=1 CCACHE_SLOPPINESS=pch_defines,time_macros CCACHE_COMPRESS=1 \
 
 RUN apt-get update && apt-get install -y \
     # Essential
-    build-essential ccache cmake git g++-multilib \
+    build-essential ccache git g++-multilib \
     \
     # Documentation
     doxygen graphviz locales \
     \
     # Misc.
     rake rsync sudo vim wget \
+    \
+    # Download CMake directly from its provider
+    && wget -qO- https://github.com/Kitware/CMake/releases/download/v$cmake_version/cmake-$cmake_version-Linux-x86_64.tar.gz |tar --strip-components=1 -xz -C /usr/local \
     \
     # Setup default locale
     && locale-gen $lang && update-locale LANG=$lang

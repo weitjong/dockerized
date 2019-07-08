@@ -47,11 +47,12 @@ references to Urho3D project in the README.md with your own project.
 ## Building
 
 You do not need to build the base image yourself unless you want to change the
-default locale to other than `en_US.UTF-8`.
+default build arguments.
 
 |Build arg|Default|Description|
 |---------|-------|-----------|
 |lang|en_US.UTF-8|Language locale setting|
+|cmake_version|3.14.5|CMake version|
 
 e.g.
 ```
