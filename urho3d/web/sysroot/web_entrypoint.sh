@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 #
 # Copyright (c) 2019 Yao Wei Tjong. All rights reserved.
 #
@@ -20,41 +21,21 @@
 # THE SOFTWARE.
 #
 
-FROM ubuntu:latest
+# Allow 'urho3d' user to read Emscripten config file
+sudo chmod o+rx /root && sudo chmod o+r /root/.emscripten
 
-LABEL description="Dockerized build environment for Urho3D" \
-      source-repo=https://github.com/urho3d/dockerized \
-      binary-repo=https://hub.docker.com/u/urho3d
+# Use the EMSDK provided script to setup the environment
+source $EMSDK_HOME/emsdk_set_env.sh
 
-ARG lang=en_US.UTF-8
-ARG cmake_version=3.14.5
+# Ensure ccache is being found first
+PATH=/usr/lib/ccache:$PATH
 
-ENV USE_CCACHE=1 CCACHE_SLOPPINESS=pch_defines,time_macros CCACHE_COMPRESS=1 \
-    URHO3D_LUAJIT=1 \
-    HOST_UID=1000 HOST_GID=1000
+# Custom ccache symlinks update
+sudo bash -c "cd /usr/lib/ccache \
+    && ln -s ../../bin/ccache emcc \
+    && ln -s ../../bin/ccache em++"
 
-RUN apt-get update && apt-get install -y \
-    # Essential
-    build-essential ccache git g++-multilib \
-    \
-    # Documentation
-    doxygen graphviz locales \
-    \
-    # Misc.
-    rake rsync sudo vim wget \
-    \
-    # Download CMake directly from its provider
-    && wget -qO- https://github.com/Kitware/CMake/releases/download/v$cmake_version/cmake-$cmake_version-Linux-x86_64.tar.gz |tar --strip-components=1 -xz -C /usr/local \
-    \
-    # Setup default locale
-    && locale-gen $lang && update-locale LANG=$lang
-
-VOLUME /home/urho3d
-
-COPY sysroot/ /
-
-ENTRYPOINT ["/script_dir/entrypoint.sh"]
-
-CMD ["/bin/bash"]
+# Execute the command chain
+exec "$@"
 
 # vi: set ts=4 sw=4 expandtab:

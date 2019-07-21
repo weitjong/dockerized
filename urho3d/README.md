@@ -20,4 +20,4 @@
   THE SOFTWARE.
 -->
 
-# Dockerized build environment
+# Dockerized build environment for Urho3D

@@ -20,4 +20,12 @@
   THE SOFTWARE.
 -->
 
-# Dockerized build environment
+# FreeBSD dockerized build environment for Urho3D
+
+This branch of the repo contains the information to build and run the FreeBSD DBE
+for Urho3D.
+
+Although the main purpose of this docker image is to build Urho3D project, any
+Urho3D downstream projects that reuse Urho3D build system may benefit from the
+dockerized build environment as well. Thus, you can just simply substitute all the
+references to Urho3D project in the README.md with your own project.
