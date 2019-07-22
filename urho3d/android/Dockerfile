@@ -29,11 +29,15 @@ ARG platforms=17,21,28
 ENV ANDROID_HOME=/android-sdk ANDROID_CCACHE=/usr/bin/ccache
 
 RUN apt-get update && apt-get install -y openjdk-8-jdk ninja-build \
-    && wget -q $tool_url -O /tmp/sdk.zip \
-    && mkdir $ANDROID_HOME && cd $ANDROID_HOME \
-    && unzip -q /tmp/sdk.zip && rm /tmp/sdk.zip \
+    \
+    # Download Android SDK command line tools only
+    && mkdir $ANDROID_HOME && cd $ANDROID_HOME && wget -qO- $tool_url |jar x \
+    \
+    # Fix missing configuration file
     && mkdir /root/.android && touch /root/.android/repositories.cfg \
-    && (while :; do echo 'y'; sleep 1; done) |$ANDROID_HOME/tools/bin/sdkmanager \
+    \
+    # Install Android NDK and other build tools, excluding CMake
+    && (while :; do echo 'y'; sleep 1; done) |bash $ANDROID_HOME/tools/bin/sdkmanager \
         "build-tools;$tool_version"\
         'ndk-bundle' \
         'platform-tools' \
