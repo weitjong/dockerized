@@ -20,6 +20,50 @@
 # THE SOFTWARE.
 #
 
+FROM ubuntu:latest AS builder-armhf
+
+RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qemu-user-static wget xz-utils \
+    \
+    # Get the latest LTS codename
+    && name=$(lsb_release -c |cut -d':' -f2 |xargs) \
+    \
+    # Download root compressed file from the matching Ubuntu cloud image
+    && mkdir /sysroot && wget --no-check-certificate -qO- https://cloud-images.ubuntu.com/$name/current/$name-server-cloudimg-armhf-root.tar.xz |tar -xJC /sysroot \
+    \
+    # Prepare it to be chroot-ed
+    && cp $(which qemu-arm-static) /sysroot/$(which qemu-arm-static) \
+    \
+    # Install Urho3D prerequisite packages in chroot jail
+    && chroot /sysroot /bin/bash -c 'apt-get update && apt-get -y upgrade && apt-get -y install libgles{1,2}-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libudev-dev' \
+    \
+    # Fix broken symbolic links
+    && for l in $(find /sysroot/lib -xtype l); do ln -sf $(basename $(readlink $l)) $l; done \
+    && for l in $(find /sysroot/usr/lib/arm-linux-gnueabihf -xtype l); do ln -sf ../../..$(readlink $l) $l; done
+
+##
+
+FROM ubuntu:latest AS builder-arm64
+
+RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qemu-user-static wget xz-utils \
+    \
+    # Get the latest LTS codename
+    && name=$(lsb_release -c |cut -d':' -f2 |xargs) \
+    \
+    # Download root compressed file from the matching Ubuntu cloud image
+    && mkdir /sysroot && wget --no-check-certificate -qO- https://cloud-images.ubuntu.com/$name/current/$name-server-cloudimg-arm64-root.tar.xz |tar -xJC /sysroot \
+    \
+    # Prepare it to be chroot-ed
+    && cp $(which qemu-aarch64-static) /sysroot/$(which qemu-aarch64-static) \
+    \
+    # Install Urho3D prerequisite packages in chroot jail
+    && chroot /sysroot /bin/bash -c 'apt-get update && apt-get -y upgrade && apt-get -y install libgles{1,2}-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libudev-dev' \
+    \
+    # Fix broken symbolic links
+    && for l in $(find /sysroot/lib -xtype l); do ln -sf $(basename $(readlink $l)) $l; done \
+    && for l in $(find /sysroot/usr/lib/aarch64-linux-gnu -xtype l); do ln -sf ../../..$(readlink $l) $l; done
+
+##
+
 FROM urho3d/dockerized:latest
 
 ARG tool_version=5.5.0-2017.10-x86_64
@@ -32,9 +76,17 @@ ENV ARMHF_PREFIX=/gcc-linaro-${tool_version}_$armhf_triplet/bin/$armhf_triplet \
     ARM64_SYSROOT=/arm64-sysroot
 
 RUN for triplet in $armhf_triplet $arm64_triplet; do tool=gcc-linaro-${tool_version}_$triplet \
-    && wget -q https://releases.linaro.org/components/toolchain/binaries/latest-5/$triplet/$tool.tar.xz -O /tmp/$tool.tar.xz \
-    && tar -C / -xof /tmp/$tool.tar.xz && rm /tmp/$tool.tar.xz; done \
-    && for sysroot in $ARMHF_SYSROOT $ARM64_SYSROOT; do git clone -q --depth 1 https://github.com/urho3d$sysroot.git $sysroot; done
+        && wget -qO- https://releases.linaro.org/components/toolchain/binaries/latest-5/$triplet/$tool.tar.xz |tar -xJC /; done
+
+# Copy prepared sysroot from builder stage
+COPY --from=builder-armhf /sysroot/opt/ /armhf-sysroot/opt/
+COPY --from=builder-armhf /sysroot/lib/ /armhf-sysroot/lib/
+COPY --from=builder-armhf /sysroot/usr/include/ /armhf-sysroot/usr/include/
+COPY --from=builder-armhf /sysroot/usr/lib/ /armhf-sysroot/usr/lib/
+COPY --from=builder-arm64 /sysroot/opt/ /arm64-sysroot/opt/
+COPY --from=builder-arm64 /sysroot/lib/ /arm64-sysroot/lib/
+COPY --from=builder-arm64 /sysroot/usr/include/ /arm64-sysroot/usr/include/
+COPY --from=builder-arm64 /sysroot/usr/lib/ /arm64-sysroot/usr/lib/
 
 COPY sysroot/ /
 
