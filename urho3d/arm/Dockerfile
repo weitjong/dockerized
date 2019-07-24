@@ -32,12 +32,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qem
     \
     # Prepare it to be chroot-ed
     && cp $(which qemu-arm-static) /sysroot/$(which qemu-arm-static) \
-    \
+    && rm /sysroot/etc/resolv.conf && echo nameserver 8.8.8.8 >/sysroot/etc/resolv.conf
+
     # Install Urho3D prerequisite packages in chroot jail
-    && chroot /sysroot /bin/bash -c 'apt-get update && apt-get -y upgrade && apt-get -y install libgles{1,2}-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libudev-dev' \
+RUN chroot /sysroot /bin/bash -c 'apt-get update && apt-get -y upgrade && apt-get -y install libglvnd-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libudev-dev' \
     \
     # Fix broken symbolic links
-    && for l in $(find /sysroot/lib -xtype l); do ln -sf $(basename $(readlink $l)) $l; done \
     && for l in $(find /sysroot/usr/lib/arm-linux-gnueabihf -xtype l); do ln -sf ../../..$(readlink $l) $l; done
 
 ##
@@ -54,12 +54,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qem
     \
     # Prepare it to be chroot-ed
     && cp $(which qemu-aarch64-static) /sysroot/$(which qemu-aarch64-static) \
-    \
+    && rm /sysroot/etc/resolv.conf && echo nameserver 8.8.8.8 >/sysroot/etc/resolv.conf
+
     # Install Urho3D prerequisite packages in chroot jail
-    && chroot /sysroot /bin/bash -c 'apt-get update && apt-get -y upgrade && apt-get -y install libgles{1,2}-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libudev-dev' \
+RUN chroot /sysroot /bin/bash -c 'apt-get update && apt-get -y upgrade && apt-get -y install libglvnd-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libudev-dev' \
     \
     # Fix broken symbolic links
-    && for l in $(find /sysroot/lib -xtype l); do ln -sf $(basename $(readlink $l)) $l; done \
     && for l in $(find /sysroot/usr/lib/aarch64-linux-gnu -xtype l); do ln -sf ../../..$(readlink $l) $l; done
 
 ##
@@ -76,7 +76,7 @@ ENV ARMHF_PREFIX=/gcc-linaro-${tool_version}_$armhf_triplet/bin/$armhf_triplet \
     ARM64_SYSROOT=/arm64-sysroot
 
 RUN for triplet in $armhf_triplet $arm64_triplet; do tool=gcc-linaro-${tool_version}_$triplet \
-        && wget -qO- https://releases.linaro.org/components/toolchain/binaries/latest-5/$triplet/$tool.tar.xz |tar -xJC /; done
+        && wget -qO- https://releases.linaro.org/components/toolchain/binaries/latest-5/$triplet/$tool.tar.xz |tar -xJ; done
 
 # Copy prepared sysroot from builder stage
 COPY --from=builder-armhf /sysroot/opt/ /armhf-sysroot/opt/
