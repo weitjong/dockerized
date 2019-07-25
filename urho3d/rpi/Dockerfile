@@ -29,10 +29,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends qemu-user-stati
     \
     # Prepare it to be chroot-ed
     && cp $(which qemu-arm-static) /sysroot/$(which qemu-arm-static) \
-    && perl -pi -e 's/^/#/g' /sysroot/etc/ld.so.preload \
-    \
+    && perl -pi -e 's/^/#/g' /sysroot/etc/ld.so.preload
+
     # Install Urho3D prerequisite packages in chroot jail
-    && chroot /sysroot /bin/bash -c 'apt-get update && apt-get -y upgrade && apt-get -y install libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libudev-dev libevdev2' \
+RUN chroot /sysroot /bin/bash -c 'apt-get update && apt-get -y upgrade && apt-get -y install libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libudev-dev libevdev2' \
     \
     # Fix broken symbolic links
     && for l in $(find /sysroot/lib -xtype l); do ln -sf $(basename $(readlink $l)) $l; done \
