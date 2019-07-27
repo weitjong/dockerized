@@ -22,20 +22,20 @@
 
 FROM urho3d/dockerized:latest
 
-ENV EMSDK_HOME=/emscripten-sdk \
-    EMCC_SKIP_SANITY_CHECK=1
+ENV EMSDK=/emsdk-master \
+    EMCC_SKIP_SANITY_CHECK=1 \
+    EMSCRIPTEN_ALLOW_NEWER_PYTHON=1 \
+    EMSCRIPTEN_ROOT_PATH=/emsdk-master/fastcomp/emscripten
 
-RUN apt-get update && apt-get install -y python \
-    && git clone -q --depth 1 --branch incoming \
-        https://github.com/urho3d$EMSDK_HOME.git $EMSDK_HOME \
-    && cd $EMSDK_HOME \
-    && ./emsdk activate --build=Release \
-        sdk-incoming-64bit binaryen-master-64bit >/dev/null \
-    && ./emsdk construct_env >/dev/null \
-    && for compiler in emscripten/incoming/{emcc,em++}; \
-        do \
-            touch -d "$(git log -1 --format=%cd --date=short)" $compiler; \
-        done
+RUN apt-get update && apt-get install -y --no-install-recommends python3.7 python3-distutils \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3.7 37 \
+    && wget -qO- https://github.com/juj/emsdk/archive/master.tar.gz |tar -xz \
+    && cd $EMSDK \
+    && ./emsdk update-tags \
+    && ./emsdk install latest \
+    && ./emsdk activate latest \
+    && ./emsdk construct_env \
+    && rm $EMSDK/zips/*
 
 COPY sysroot/ /
 

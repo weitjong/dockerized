@@ -25,7 +25,7 @@
 sudo chmod o+rx /root && sudo chmod o+r /root/.emscripten
 
 # Use the EMSDK provided script to setup the environment
-source $EMSDK_HOME/emsdk_set_env.sh
+source $EMSDK/emsdk_set_env.sh
 
 # Ensure ccache is being found first
 PATH=/usr/lib/ccache:$PATH
