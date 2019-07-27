@@ -28,7 +28,7 @@ ARG platforms=17,21,28
 
 ENV ANDROID_HOME=/android-sdk ANDROID_CCACHE=/usr/bin/ccache
 
-RUN apt-get update && apt-get install -y openjdk-8-jdk ninja-build \
+RUN apt-get update && apt-get install -y --no-install-recommends openjdk-8-jdk ninja-build \
     \
     # Download Android SDK command line tools only
     && mkdir $ANDROID_HOME && cd $ANDROID_HOME && wget -qO- $tool_url |jar x \

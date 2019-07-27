@@ -27,7 +27,7 @@ ARG freebsd_version=12.0-RELEASE
 ENV CC=clang CXX=clang++ \
     URHO3D_PCH=0
 
-RUN apt-get update && apt-get install -y clang \
+RUN apt-get update && apt-get install -y --no-install-recommends clang \
     \
     # 64-bit FreeBSD sysroot
     && mkdir /amd64-sysroot && wget -qO- ftp://ftp2.jp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/${freebsd_version}/base.txz |tar -xJC /amd64-sysroot ./lib/ ./usr/lib/ ./usr/include/ \
