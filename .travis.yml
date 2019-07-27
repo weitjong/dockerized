@@ -40,6 +40,14 @@ matrix:
       env: TAG_NAME=urho3d/dockerized-native BUILD_DIR=urho3d/native
     - <<: *derived-images
       env: TAG_NAME=urho3d/dockerized-mingw BUILD_DIR=urho3d/mingw
+    - <<: *derived-images
+      env: TAG_NAME=urho3d/dockerized-android BUILD_DIR=urho3d/android
+    - <<: *derived-images
+      env: TAG_NAME=urho3d/dockerized-rpi BUILD_DIR=urho3d/rpi
+    - <<: *derived-images
+      env: TAG_NAME=urho3d/dockerized-arm BUILD_DIR=urho3d/arm
+    - <<: *derived-images
+      env: TAG_NAME=urho3d/dockerized-web BUILD_DIR=urho3d/web
 
 ...
 
