@@ -48,6 +48,8 @@ matrix:
       env: TAG_NAME=urho3d/dockerized-arm BUILD_DIR=urho3d/arm
     - <<: *derived-images
       env: TAG_NAME=urho3d/dockerized-web BUILD_DIR=urho3d/web
+    - <<: *derived-images
+      env: TAG_NAME=urho3d/dockerized-freebsd BUILD_DIR=urho3d/freebsd
 
 ...
 
