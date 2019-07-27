@@ -33,6 +33,15 @@ script: docker build -t $TAG_NAME $BUILD_DIR
 after_success: docker push $TAG_NAME
 notifications: {email: {on_success: never, on_failure: change}}
 
+matrix:
+  fast_finish: true
+  include:
+    - &urho3d-dockerized
+      stage: Urho3D dockerized
+      env: TAG_NAME=urho3d/dockerized-native BUILD_DIR=urho3d/native
+    - <<: *urho3d-dockerized
+      env: TAG_NAME=urho3d/dockerized-mingw BUILD_DIR=urho3d/mingw
+
 ...
 
 # vi: set ts=2 sw=2 expandtab:
