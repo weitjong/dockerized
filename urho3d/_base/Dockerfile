@@ -33,7 +33,7 @@ ENV USE_CCACHE=1 CCACHE_SLOPPINESS=pch_defines,time_macros CCACHE_COMPRESS=1 \
     URHO3D_LUAJIT=1 \
     HOST_UID=1000 HOST_GID=1000
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     # Essential
     build-essential ccache git g++-multilib \
     \
@@ -44,7 +44,7 @@ RUN apt-get update && apt-get install -y \
     rake rsync sudo vim wget \
     \
     # Download CMake directly from its provider
-    && wget -qO- https://github.com/Kitware/CMake/releases/download/v$cmake_version/cmake-$cmake_version-Linux-x86_64.tar.gz |tar --strip-components=1 -xz -C /usr/local \
+    && wget -qO- https://github.com/Kitware/CMake/releases/download/v$cmake_version/cmake-$cmake_version-Linux-x86_64.tar.gz |tar --strip-components=1 -xzC /usr/local \
     \
     # Setup default locale
     && locale-gen $lang && update-locale LANG=$lang
