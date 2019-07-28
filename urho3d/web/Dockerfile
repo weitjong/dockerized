@@ -27,7 +27,7 @@ ENV EMSDK=/emsdk-master \
     EMSCRIPTEN_ALLOW_NEWER_PYTHON=1 \
     EMSCRIPTEN_ROOT_PATH=/emsdk-master/fastcomp/emscripten
 
-RUN apt-get update && apt-get install -y --no-install-recommends python3.7 python3-distutils \
+RUN apt-get update && apt-get install -y --no-install-recommends libxml2 python3.7 python3-distutils \
     && update-alternatives --install /usr/bin/python python /usr/bin/python3.7 37 \
     && wget -qO- https://github.com/juj/emsdk/archive/master.tar.gz |tar -xz \
     && cd $EMSDK \
