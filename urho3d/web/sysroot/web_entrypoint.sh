@@ -28,7 +28,7 @@ sudo chmod o+rx /root && sudo chmod o+r /root/.emscripten
 source $EMSDK/emsdk_set_env.sh
 
 # Ensure ccache is being found first
-PATH=/usr/lib/ccache:$PATH
+PATH=/usr/lib/ccache:$PATH:$(grep LLVM_ROOT $EM_CONFIG |cut -d"'" -f2)
 
 # Custom ccache symlinks update
 sudo bash -c "cd /usr/lib/ccache \
