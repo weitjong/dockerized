@@ -22,12 +22,13 @@
 
 FROM ubuntu:latest AS builder
 
+ARG ftp_server=ftp://ftp1.us.freebsd.org/pub/FreeBSD/releases/amd64/amd64/
 ARG freebsd_version=12.0-RELEASE
 
 RUN apt-get update && apt-get install -y --no-install-recommends qemu-user-static wget xz-utils \
     \
     # Download base compressed file from the specified FreeBSD release
-    && mkdir /sysroot && wget -qO- ftp://ftp2.jp.freebsd.org/pub/FreeBSD/releases/amd64/amd64/${freebsd_version}/base.txz |tar -xJC /sysroot
+    && mkdir /sysroot && wget -qO- ${ftp_server}/${freebsd_version}/base.txz |tar -xJC /sysroot
 
     # Prepare it to be chroot-ed
 RUN cp $(which qemu-arm-static) /sysroot/$(which qemu-arm-static) \
