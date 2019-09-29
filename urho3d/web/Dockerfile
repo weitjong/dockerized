@@ -29,13 +29,12 @@ ENV EMSDK=/emsdk-master \
 
 RUN apt-get update && apt-get install -y --no-install-recommends libxml2 python3.7 python3-distutils \
     && update-alternatives --install /usr/bin/python python /usr/bin/python3.7 37 \
-    && wget -qO- https://github.com/juj/emsdk/archive/master.tar.gz |tar -xz \
+    && wget -qO- https://github.com/emscripten-core/emsdk/archive/master.tar.gz |tar -xz \
     && cd $EMSDK \
     && ./emsdk update-tags \
     && ./emsdk install latest \
     && ./emsdk activate latest \
-    && ./emsdk construct_env \
-    && rm $EMSDK/zips/*
+    && ./emsdk construct_env
 
 COPY sysroot/ /
 
