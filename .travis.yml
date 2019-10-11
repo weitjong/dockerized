@@ -26,7 +26,7 @@ dist: trusty
 addons: {apt: {packages: [docker-ce, qemu-user-static]}}
 env: {global: [secure: Yw01nRh1KEeqs8tK30XkD1p+R7cVzeM7tUUV/kRuz2IWVdYMT7xitNaLkFB87AYgq5SqI+7H2hWSpPvI0wWgUOwKHGrmEhatJcLI9sqXVWmqmlwzstbLwbqjGtb20qaOeDNrrSFYh4Z9ZiSKJt4mIISVedupowBq9FCFZxTFn98mVD9P+GIXtkV0imPt1S9eabSHkfjE6Gm66F5V0n+rKsPtnWaNSGayZIQrtW8Dq9dzkn/mCvnOYYLAZwg/LZQBIseBhIBtJSc3xeyekNkVn+cOY4oM57vwVRSgo6RdYxLHdx19snjTHOXLlpFtqE35FM8jPG0xauYfWiiHSjil+uZDm8m4AtiG8ObehNFPH4XuONJGHPhqA+GLQFeVDSxhJUqGEwqRxOtWMWS+IPQjYt92DK818oew1bLWUuvk9BfttQ3TlvveypxVfsJGc33kcekuRcMDq1wPAFELFhy+jawPfakvwszE3WjMVM0nf7QmxFY4xz7aa+ciZ0KeE7NJN+OYV8kIunotk0jBY6egxc1xYunfmeQhx1/51gi5sBv63dzpTfQXdL5unwZNhG7XCEh2GFJJuO2XvOkO5fv1dTwHcPh/fTltpBK/PCCDPSOgYWMZMX6wvmmguptv+BVHA+Ce1SgwBo9VTIux3REOcExSAPw+X6OcJQfGIIAH2Rs=]}
 script: docker build -t $TAG_NAME $BUILD_DIR
-after_success: if [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" ]]; then echo $DOCKER_PASSWORD |docker login -u $DOCKER_USERNAME --password-stdin && docker push $TAG_NAME; fi
+after_success: if [[ "$TRAVIS_BRANCH" == "master" && "$TRAVIS_PULL_REQUEST" == "false" ]]; then echo $DOCKER_PASSWORD |docker login -u $DOCKER_USERNAME --password-stdin && docker push $TAG_NAME && docker logout; fi
 notifications: {email: {on_success: never, on_failure: change}}
 matrix:
   fast_finish: true

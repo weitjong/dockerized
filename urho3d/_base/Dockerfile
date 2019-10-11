@@ -41,7 +41,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     doxygen graphviz locales \
     \
     # Misc.
-    rake rsync sudo vim wget openssh-client \
+    openssh-client rake rsync sudo vim wget \
     \
     # Download CMake directly from its provider
     && wget -qO- https://github.com/Kitware/CMake/releases/download/v$cmake_version/cmake-$cmake_version-Linux-x86_64.tar.gz |tar --strip-components=1 -xzC /usr/local \
