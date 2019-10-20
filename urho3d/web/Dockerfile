@@ -25,15 +25,15 @@ FROM urho3d/dockerized:latest
 ENV EMSDK=/emsdk-master \
     EMCC_SKIP_SANITY_CHECK=1 \
     EMSCRIPTEN_ALLOW_NEWER_PYTHON=1 \
-    EMSCRIPTEN_ROOT_PATH=/emsdk-master/fastcomp/emscripten
+    EMSCRIPTEN_ROOT_PATH=/emsdk-master/upstream/emscripten
 
 RUN apt-get update && apt-get install -y --no-install-recommends libxml2 python3.7 python3-distutils \
     && update-alternatives --install /usr/bin/python python /usr/bin/python3.7 37 \
     && wget -qO- https://github.com/emscripten-core/emsdk/archive/master.tar.gz |tar -xz \
     && cd $EMSDK \
     && ./emsdk update-tags \
-    && ./emsdk install latest \
-    && ./emsdk activate latest \
+    && ./emsdk install latest-upstream \
+    && ./emsdk activate latest-upstream \
     && ./emsdk construct_env
 
 COPY sysroot/ /
