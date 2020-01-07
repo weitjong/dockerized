@@ -34,19 +34,30 @@ sed -i '/^#.*history-search/s/^# //' /etc/inputrc
 # Delay updating the symlinks to runtime after all compiler toolchains have been installed
 /usr/sbin/update-ccache-symlinks
 
-# Delay group and user creation to runtime to match the host GID and host UID
-groupadd -g $HOST_GID urho3d && useradd -u $HOST_UID -g $HOST_GID -s /bin/bash urho3d
-
-# Allow 'urho3d' user to write into mounted docker volumes
-chmod o+w /home/urho3d
-
 # Ensure ccache is being found first
 PATH=/usr/lib/ccache:$PATH
 
 # Use the built-in locale from the docker image
 set -a && . /etc/default/locale && set +a
 
-# Execute the command chain (relative to project root) as urho3d
-cd $PROJECT_DIR && runuser -u urho3d -- "$@"
+if [[ "$container" == "podman" ]]; then
+    # Change home dir for this session
+    HOME=/home/urho3d
+
+    # Execute the command chain (relative to project root) as is since we run Podman in rootless mode
+    cd $PROJECT_DIR && exec "$@"
+else
+    # Delay group and user creation to runtime to match the host GID and host UID
+    groupadd -g $HOST_GID urho3d && useradd -u $HOST_UID -g $HOST_GID -s /bin/bash urho3d
+
+    # Allow 'urho3d' user to write into mounted docker volumes
+    chmod o+w /home/urho3d
+
+    # With great power comes great responsibility
+    echo "urho3d ALL=(ALL) NOPASSWD: ALL" >/etc/sudoers.d/super_urho3d
+
+    # Execute the command chain (relative to project root) as urho3d
+    cd $PROJECT_DIR && runuser -u urho3d -- "$@"
+fi
 
 # vi: set ts=4 sw=4 expandtab:

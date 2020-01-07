@@ -22,7 +22,8 @@
 
 FROM ubuntu:latest
 
-LABEL description="Dockerized build environment for Urho3D" \
+LABEL maintainer="Yao Wei Tjong <weitjong@gmail.com>" \
+      description="Dockerized build environment for Urho3D" \
       source-repo=https://github.com/urho3d/dockerized \
       binary-repo=https://hub.docker.com/u/urho3d
 
