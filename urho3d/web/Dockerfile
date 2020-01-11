@@ -32,8 +32,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends libxml2 python3
     && wget -qO- https://github.com/emscripten-core/emsdk/archive/master.tar.gz |tar -xz \
     && cd $EMSDK \
     && ./emsdk update-tags \
-    && ./emsdk install latest-upstream \
-    && ./emsdk activate latest-upstream \
+    && ./emsdk install latest \
+    && ./emsdk activate latest \
     && ./emsdk construct_env
 
 COPY sysroot/ /
