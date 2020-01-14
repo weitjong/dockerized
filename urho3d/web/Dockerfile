@@ -22,6 +22,8 @@
 
 FROM urho3d/dockerized:latest
 
+ARG VERSION=latest
+
 ENV EMSDK=/emsdk-master \
     EMCC_SKIP_SANITY_CHECK=1 \
     EMSCRIPTEN_ALLOW_NEWER_PYTHON=1 \
@@ -32,8 +34,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends default-jre lib
     && wget -qO- https://github.com/emscripten-core/emsdk/archive/master.tar.gz |tar -xz \
     && cd $EMSDK \
     && ./emsdk update-tags \
-    && ./emsdk install latest \
-    && ./emsdk activate latest \
+    && ./emsdk install $VERSION \
+    && ./emsdk activate $VERSION \
     && ./emsdk construct_env
 
 COPY sysroot/ /

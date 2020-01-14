@@ -32,11 +32,13 @@ references to Urho3D project in the README.md with your own project.
 
 ## Building
 
-You do not need to build this docker image yourself unless you want to change the
-default locale by building it from a custom base image using alternative locale. 
+|Build arg|Default|Description|
+|---------|-------|-----------|
+|VERSION|latest|EMSDK version to install, e.g.: tot-upstream|
+
 
 ```
-$ docker build --tag=urho3d/dockerized-web .
+$ podman build --build-arg VERSION=tot-upstream -t docker.io/urho3d/dockerized-web:tot urho3d/web
 ```
 
 ## Running
