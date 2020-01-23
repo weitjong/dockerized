@@ -26,8 +26,7 @@ ARG VERSION=latest
 
 ENV EMSDK=/emsdk-master \
     EMCC_SKIP_SANITY_CHECK=1 \
-    EMSCRIPTEN_ALLOW_NEWER_PYTHON=1 \
-    EMSCRIPTEN_ROOT_PATH=/emsdk-master/upstream/emscripten
+    EMSCRIPTEN_ALLOW_NEWER_PYTHON=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends default-jre libxml2 python3.7 python3-distutils \
     && update-alternatives --install /usr/bin/python python /usr/bin/python3.7 37 \
