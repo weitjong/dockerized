@@ -24,7 +24,7 @@ FROM urho3d/dockerized:latest
 
 ARG tool_url=https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
 ARG tool_version=28.0.3
-ARG ndk_version=20.1.5948944
+ARG ndk_version=21.0.6113669
 ARG platforms=18,21,29
 
 ENV ANDROID_HOME=/android-sdk ANDROID_CCACHE=/usr/bin/ccache
