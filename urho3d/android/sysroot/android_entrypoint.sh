@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2019 Yao Wei Tjong. All rights reserved.
+# Copyright (c) 2019-2020 Yao Wei Tjong. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -21,8 +21,13 @@
 # THE SOFTWARE.
 #
 
-# Keep Android's sdkmanager happy
-mkdir -p ~/.android && touch ~/.android/repositories.cfg
+if [[ "$container" == "podman" ]]; then
+    # Set Gradle user home to a dir mounted from pod's volume so Gradle caches are persisted
+    export GRADLE_USER_HOME=~/.gradle
+else
+    # Keep Android's sdkmanager happy
+    mkdir -p ~/.android && touch ~/.android/repositories.cfg
+fi
 
 # Execute the command chain
 exec "$@"

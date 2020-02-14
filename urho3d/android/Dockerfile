@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019 Yao Wei Tjong. All rights reserved.
+# Copyright (c) 2019-2020 Yao Wei Tjong. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -24,7 +24,8 @@ FROM urho3d/dockerized:latest
 
 ARG tool_url=https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
 ARG tool_version=28.0.3
-ARG platforms=17,21,28
+ARG ndk_version=21.0.6113669
+ARG platforms=18,21,29
 
 ENV ANDROID_HOME=/android-sdk ANDROID_CCACHE=/usr/bin/ccache
 
@@ -39,7 +40,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends openjdk-8-jdk n
     # Install Android NDK and other build tools, excluding CMake
     && (while :; do echo 'y'; sleep 1; done) |bash $ANDROID_HOME/tools/bin/sdkmanager \
         "build-tools;$tool_version"\
-        'ndk-bundle' \
+        "ndk;$ndk_version" \
         'platform-tools' \
         $(bash -c "echo platforms\;android-{$platforms}") \
         # Hack quiet mode for sdkmanager
@@ -48,9 +49,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends openjdk-8-jdk n
     # Strip-off some bits to reduce layer/image size
     && find $ANDROID_HOME -type f -name NOTICE\* |xargs rm \
     && find $ANDROID_HOME -type d -name renderscript |xargs rm -rf \
-    && find $ANDROID_HOME/ndk-bundle/platforms -mindepth 1 -maxdepth 1 \
+    && find $ANDROID_HOME/ndk/$ndk_version/platforms -mindepth 1 -maxdepth 1 \
        |grep -Ev "\-($(bash -c 'echo ${platforms//,/\|}'))$" |xargs rm -rf \
-    && cd $ANDROID_HOME/ndk-bundle && rm -rf sources/third_party \
+    && cd $ANDROID_HOME/ndk/$ndk_version && rm -rf sources/third_party \
         wrap.sh prebuilt python-packages shader-tools simpleperf ndk*
 
     # Download and set up OpenSSL

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2019 Yao Wei Tjong. All rights reserved.
+# Copyright (c) 2019-2020 Yao Wei Tjong. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,20 +22,20 @@
 
 FROM urho3d/dockerized:latest
 
+ARG VERSION=latest
+
 ENV EMSDK=/emsdk-master \
     EMCC_SKIP_SANITY_CHECK=1 \
-    EMSCRIPTEN_ALLOW_NEWER_PYTHON=1 \
-    EMSCRIPTEN_ROOT_PATH=/emsdk-master/fastcomp/emscripten
+    EMSCRIPTEN_ALLOW_NEWER_PYTHON=1
 
-RUN apt-get update && apt-get install -y --no-install-recommends libxml2 python3.7 python3-distutils \
+RUN apt-get update && apt-get install -y --no-install-recommends default-jre libxml2 python3.7 python3-distutils \
     && update-alternatives --install /usr/bin/python python /usr/bin/python3.7 37 \
-    && wget -qO- https://github.com/juj/emsdk/archive/master.tar.gz |tar -xz \
+    && wget -qO- https://github.com/emscripten-core/emsdk/archive/master.tar.gz |tar -xz \
     && cd $EMSDK \
     && ./emsdk update-tags \
-    && ./emsdk install latest \
-    && ./emsdk activate latest \
-    && ./emsdk construct_env \
-    && rm $EMSDK/zips/*
+    && ./emsdk install $VERSION \
+    && ./emsdk activate $VERSION \
+    && ./emsdk construct_env
 
 COPY sysroot/ /
 
