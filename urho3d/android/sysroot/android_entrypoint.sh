@@ -27,6 +27,8 @@ if [[ "$container" == "podman" ]]; then
 else
     # Keep Android's sdkmanager happy
     mkdir -p ~/.android && touch ~/.android/repositories.cfg
+    # Allow 'urho3d' user to update SDK components during runtime, however, not persisted
+    sudo chmod o+w /android-sdk/{,ndk,build-tools,platforms}
 fi
 
 # Execute the command chain
