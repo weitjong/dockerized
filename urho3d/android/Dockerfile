@@ -29,7 +29,7 @@ ARG platforms=18,21,29
 
 ENV ANDROID_HOME=/android-sdk ANDROID_CCACHE=/usr/bin/ccache
 
-RUN apt-get update && apt-get install -y --no-install-recommends openjdk-8-jdk ninja-build wget unzip \
+RUN apt-get update && apt-get install -y --no-install-recommends openjdk-8-jdk ninja-build \
     \
     # Download Android SDK command line tools only
     && mkdir $ANDROID_HOME && cd $ANDROID_HOME && wget -qO- $tool_url |jar x \
@@ -53,11 +53,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends openjdk-8-jdk n
        |grep -Ev "\-($(bash -c 'echo ${platforms//,/\|}'))$" |xargs rm -rf \
     && cd $ANDROID_HOME/ndk/$ndk_version && rm -rf sources/third_party \
         wrap.sh prebuilt python-packages shader-tools simpleperf ndk*
-
-    # Download and set up OpenSSL
-RUN wget https://github.com/leenjewel/openssl_for_ios_and_android/releases/download/android_openssl-1.1.1a/only_android_openssl-1.1.1a.zip \
-    && unzip only_android_openssl-1.1.1a.zip -d /openssl \
-    && export OPENSSL_SSL_LIBRARY=/openssl
 
 COPY sysroot/ /
 
