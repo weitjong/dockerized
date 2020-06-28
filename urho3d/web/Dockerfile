@@ -34,8 +34,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends default-jre lib
     && cd $EMSDK \
     && ./emsdk update-tags \
     && ./emsdk install $VERSION \
-    && ./emsdk activate $VERSION \
-    && ./emsdk construct_env
+    && ./emsdk activate $VERSION
 
 COPY sysroot/ /
 

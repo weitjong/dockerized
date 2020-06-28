@@ -40,6 +40,9 @@ PATH=/usr/lib/ccache:$PATH
 # Use the built-in locale from the docker image
 set -a && . /etc/default/locale && set +a
 
+# Temporary workaround for "sudo: setrlimit(RLIMIT_CORE): Operation not permitted" issue on sudo v1.8.31
+echo "Set disable_coredump false" >/etc/sudo.conf
+
 if [[ "$container" == "podman" ]]; then
     # Change home dir for this session
     HOME=/home/urho3d

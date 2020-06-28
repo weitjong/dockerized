@@ -21,14 +21,14 @@
 # THE SOFTWARE.
 #
 
-# Allow 'urho3d' user to read Emscripten config file
-sudo chmod o+rx /root && sudo chmod o+r /root/.emscripten
-
 # Use the EMSDK provided script to setup the environment
-source $EMSDK/emsdk_set_env.sh
+source $EMSDK/emsdk_env.sh 2>/dev/null
+
+# Temporary workaround to let 'urho3d' user to lock the cache, see https://github.com/emscripten-core/emsdk/issues/535
+sudo chmod o+w $(dirname $EM_CACHE) && sudo rm -f $EM_CACHE.lock
 
 # Ensure ccache is being found first
-PATH=/usr/lib/ccache:$PATH:$(grep LLVM_ROOT $EM_CONFIG |cut -d"'" -f2)
+PATH=/usr/lib/ccache:$PATH:$(cat $EM_CONFIG <(echo 'print(LLVM_ROOT)') |python -)
 
 # Custom ccache symlinks update
 sudo bash -c "cd /usr/lib/ccache \
