@@ -29,10 +29,12 @@ LABEL maintainer="Yao Wei Tjong <weitjong@gmail.com>" \
 
 ARG lang=en_US.UTF-8
 ARG cmake_version=3.14.5
+ARG time_zone=Asia/Singapore
 
 ENV USE_CCACHE=1 CCACHE_SLOPPINESS=pch_defines,time_macros CCACHE_COMPRESS=1 \
     URHO3D_LUAJIT=1 \
-    HOST_UID=1000 HOST_GID=1000
+    HOST_UID=1000 HOST_GID=1000 \
+    DEBIAN_FRONTEND=noninteractive TZ=$time_zone
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     # Essential
@@ -42,7 +44,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     doxygen graphviz locales \
     \
     # Misc.
-    openssh-client rake rsync sudo vim wget \
+    openssh-client rake rsync sudo tzdata vim wget \
     \
     # Download CMake directly from its provider
     && wget -qO- https://github.com/Kitware/CMake/releases/download/v$cmake_version/cmake-$cmake_version-Linux-x86_64.tar.gz |tar --strip-components=1 -xzC /usr/local \

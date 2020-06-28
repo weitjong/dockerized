@@ -24,7 +24,7 @@ FROM urho3d/dockerized:latest
 
 RUN dpkg --add-architecture i386 && apt-get update && apt-get install -y --no-install-recommends \
     # Display server
-    libgl1-mesa-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev \
+    libgl1-mesa-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev \
     \
     # Sound server
     libasound2-dev libpulse-dev \
