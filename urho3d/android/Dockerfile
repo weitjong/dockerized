@@ -22,23 +22,23 @@
 
 FROM urho3d/dockerized:latest
 
-ARG tool_url=https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip
-ARG tool_version=28.0.3
-ARG ndk_version=21.0.6113669
-ARG platforms=18,21,29
+ARG tool_url=https://dl.google.com/android/repository/commandlinetools-linux-6609375_latest.zip
+ARG tool_version=29.0.2
+ARG ndk_version=21.3.6528147
+ARG platforms=18,21,30
 
 ENV ANDROID_HOME=/android-sdk ANDROID_CCACHE=/usr/bin/ccache
 
 RUN apt-get update && apt-get install -y --no-install-recommends openjdk-8-jdk ninja-build \
     \
     # Download Android SDK command line tools only
-    && mkdir $ANDROID_HOME && cd $ANDROID_HOME && wget -qO- $tool_url |jar x \
+    && mkdir -p $ANDROID_HOME/cmdline-tools && cd $ANDROID_HOME/cmdline-tools && wget -qO- $tool_url |jar x \
     \
     # Fix missing configuration file
     && mkdir /root/.android && touch /root/.android/repositories.cfg \
     \
     # Install Android NDK and other build tools, excluding CMake
-    && (while :; do echo 'y'; sleep 1; done) |bash $ANDROID_HOME/tools/bin/sdkmanager \
+    && (while :; do echo 'y'; sleep 1; done) |bash $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager \
         "build-tools;$tool_version"\
         "ndk;$ndk_version" \
         'platform-tools' \
@@ -47,12 +47,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends openjdk-8-jdk n
         |grep -v '\[.*\]' \
     \
     # Strip-off some bits to reduce layer/image size
-    && find $ANDROID_HOME -type f -name NOTICE\* |xargs rm \
-    && find $ANDROID_HOME -type d -name renderscript |xargs rm -rf \
     && find $ANDROID_HOME/ndk/$ndk_version/platforms -mindepth 1 -maxdepth 1 \
-       |grep -Ev "\-($(bash -c 'echo ${platforms//,/\|}'))$" |xargs rm -rf \
-    && cd $ANDROID_HOME/ndk/$ndk_version && rm -rf sources/third_party \
-        wrap.sh prebuilt python-packages shader-tools simpleperf ndk*
+       |grep -Ev "\-($(bash -c 'echo ${platforms//,/\|}'))$" |xargs rm -rf
 
 COPY sysroot/ /
 

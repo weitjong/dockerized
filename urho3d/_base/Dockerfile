@@ -28,7 +28,7 @@ LABEL maintainer="Yao Wei Tjong <weitjong@gmail.com>" \
       binary-repo=https://hub.docker.com/u/urho3d
 
 ARG lang=en_US.UTF-8
-ARG cmake_version=3.14.5
+ARG cmake_version=3.17.3
 ARG time_zone=Asia/Singapore
 
 ENV USE_CCACHE=1 CCACHE_SLOPPINESS=pch_defines,time_macros CCACHE_COMPRESS=1 \
