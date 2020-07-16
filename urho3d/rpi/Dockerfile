@@ -25,14 +25,14 @@ FROM ubuntu:latest AS builder
 RUN apt-get update && apt-get install -y --no-install-recommends qemu-user-static wget xz-utils \
     \
     # Download root compressed file from the latest raspbian lite release
-    && mkdir /sysroot && wget --no-check-certificate -qO- https://downloads.raspberrypi.org/raspbian_lite/root.tar.xz |tar -xJC /sysroot
+    && mkdir /sysroot && wget --no-check-certificate -qO- https://downloads.raspberrypi.org/raspios_armhf/root.tar.xz |tar -xJC /sysroot
 
     # Prepare it to be chroot-ed
 RUN cp $(which qemu-arm-static) /sysroot/$(which qemu-arm-static) \
     && perl -pi -e 's/^/#/g' /sysroot/etc/ld.so.preload \
     \
     # Install Urho3D prerequisite packages in chroot jail
-    && chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libudev-dev libevdev2' \
+    && chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2' \
     \
     # Fix broken symbolic links
     && for l in $(find /sysroot/lib -xtype l); do ln -sf $(basename $(readlink $l)) $l; done \
