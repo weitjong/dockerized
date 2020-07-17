@@ -20,11 +20,25 @@
 # THE SOFTWARE.
 #
 
-FROM ubuntu:latest AS builder
+FROM weitjong/toolchains:armv7-rpi2-linux-gnueabihf AS armv7-rpi2-linux-gnueabihf
+
+RUN rm /home/ng/x-tools/armv7-rpi2-linux-gnueabihf/build.log.bz2 \
+    && mv /home/ng/x-tools/armv7-rpi2-linux-gnueabihf/armv7-rpi2-linux-gnueabihf/sysroot/ /sysroot
+
+##
+
+FROM weitjong/toolchains:aarch64-rpi3-linux-gnu AS aarch64-rpi3-linux-gnu
+
+RUN rm /home/ng/x-tools/aarch64-rpi3-linux-gnu/build.log.bz2 \
+    && mv /home/ng/x-tools/aarch64-rpi3-linux-gnu/aarch64-rpi3-linux-gnu/sysroot/ /sysroot
+
+##
+
+FROM ubuntu:latest AS sysroot-builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends qemu-user-static wget xz-utils \
     \
-    # Download root compressed file from the latest raspbian lite release
+    # Download root compressed file from the latest Raspberry Pi OS lite release
     && mkdir /sysroot && wget --no-check-certificate -qO- https://downloads.raspberrypi.org/raspios_armhf/root.tar.xz |tar -xJC /sysroot
 
     # Prepare it to be chroot-ed
@@ -42,17 +56,18 @@ RUN cp $(which qemu-arm-static) /sysroot/$(which qemu-arm-static) \
 
 FROM urho3d/dockerized:latest
 
-ENV RPI_PREFIX=/rpi-tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin/arm-linux-gnueabihf \
+ENV RPI_PREFIX=/rpi-tools/armv7-rpi2-linux-gnueabihf/bin/armv7-rpi2-linux-gnueabihf \
+    RPI64_PREFIX=/rpi-tools/aarch64-rpi3-linux-gnu/bin/aarch64-rpi3-linux-gnu \
     RPI_SYSROOT=/rpi-sysroot
 
-RUN git clone -q --depth 1 https://github.com/raspberrypi/tools.git /rpi-tools \
-    && for compiler in $RPI_PREFIX-{gcc,g++}; do touch -d "$(cd /rpi-tools && git log -1 --format=%cd --date=short)" $compiler; done
-
-# Copy prepared sysroot from builder stage
-COPY --from=builder /sysroot/opt/ /rpi-sysroot/opt/
-COPY --from=builder /sysroot/lib/ /rpi-sysroot/lib/
-COPY --from=builder /sysroot/usr/include/ /rpi-sysroot/usr/include/
-COPY --from=builder /sysroot/usr/lib/ /rpi-sysroot/usr/lib/
+# Copy prepared toolchain and sysroot from the builder stages
+COPY --from=sysroot-builder /sysroot/opt/ /rpi-sysroot/opt/
+COPY --from=sysroot-builder /sysroot/lib/ /rpi-sysroot/lib/
+COPY --from=sysroot-builder /sysroot/usr/include/ /rpi-sysroot/usr/include/
+COPY --from=sysroot-builder /sysroot/usr/lib/ /rpi-sysroot/usr/lib/
+COPY --from=armv7-rpi2-linux-gnueabihf /sysroot/ /rpi-sysroot/
+COPY --from=armv7-rpi2-linux-gnueabihf /home/ng/x-tools/ /rpi-tools/
+COPY --from=aarch64-rpi3-linux-gnu /home/ng/x-tools/ /rpi-tools/
 
 COPY sysroot/ /
 
