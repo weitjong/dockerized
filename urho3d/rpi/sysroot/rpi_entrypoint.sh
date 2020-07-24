@@ -21,6 +21,13 @@
 # THE SOFTWARE.
 #
 
+# Select the compiler toolchain based on the URHO3D_64BIT env var
+if [[ "$URHO3D_64BIT" == "0" ]]; then
+    export RPI_PREFIX=$RPI32_PREFIX RPI_SYSROOT=$RPI32_SYSROOT
+else
+    export RPI_PREFIX=$RPI64_PREFIX RPI_SYSROOT=$RPI64_SYSROOT
+fi
+
 # Custom ccache symlinks update
 sudo bash -c "cd /usr/lib/ccache \
     && ln -s ../../bin/ccache ${RPI_PREFIX##*/}-gcc \
