@@ -25,7 +25,7 @@
 source $EMSDK/emsdk_env.sh 2>/dev/null
 
 # Temporary workaround to let 'urho3d' user to lock the cache, see https://github.com/emscripten-core/emsdk/issues/535
-sudo chmod o+w $(dirname $EM_CACHE) && sudo rm -f $EM_CACHE.lock
+sudo find $EM_CACHE -type f -name \*.lock -exec sudo chmod o+w {} \;
 
 # Ensure ccache is being found first
 PATH=/usr/lib/ccache:$PATH:$(cat $EM_CONFIG <(echo 'print(LLVM_ROOT)') |python -)
