@@ -38,12 +38,15 @@ RUN dpkg --add-architecture i386 && apt-get update && apt-get install -y --no-in
     # LLVM/Clang compiler toolchain, use 'CC=clang CXX=clang++' to choose this toolchain instead of gcc/g++
     clang clang-tidy clang-format \
     \
-    # 32-bit support, use 'URHO3D_64BIT=0' to do 32-bit build
-    libxrandr-dev:i386 libglapi-mesa:i386 libgl1-mesa-glx:i386 libgl1-mesa-dev:i386 libxext-dev:i386 \
-    libxrender-dev:i386 libglib2.0-dev:i386 libdbus-1-dev:i386 lib32readline6-dev \
-    \
     # Virtual framebuffer for CI testing
-    xvfb
+    xvfb \
+    \
+    # 32-bit support, use 'URHO3D_64BIT=0' to do 32-bit build
+    libxrandr-dev:i386 libglapi-mesa:i386 libgl1-mesa-glx:i386 libgl1-mesa-dev:i386 libxext-dev:i386 libxrender-dev:i386
+
+# Quick workaround to avoid "E: Could not configure 'libc6:i386'" by separating the installation into two layers
+RUN apt-get install -y --no-install-recommends \
+    libglib2.0-dev:i386 libdbus-1-dev:i386 lib32readline6-dev
 
 COPY sysroot/ /
 
