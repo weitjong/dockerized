@@ -20,6 +20,15 @@
 # THE SOFTWARE.
 #
 
+FROM weitjong/sysroots:raspios_arm64 AS rpi64-sysroot-builder
+
+RUN rm -rf /sysroot/home \
+    \
+    # Install Urho3D prerequisite packages in chroot jail
+    && chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2'
+
+##
+
 FROM weitjong/toolchains:armv7-rpi2-linux-gnueabihf AS armv7-rpi2-linux-gnueabihf
 
 RUN rm /home/ng/x-tools/armv7-rpi2-linux-gnueabihf/build.log.bz2 \
@@ -51,27 +60,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends qemu-user-stati
     # Fix broken symbolic links
     && for l in $(find /sysroot/lib -xtype l); do ln -sf $(basename $(readlink $l)) $l; done \
     && for l in $(find /sysroot/usr/lib/arm-linux-gnueabihf -xtype l); do ln -sf ../../..$(readlink $l) $l; done
-
-##
-
-FROM ubuntu:latest AS rpi64-sysroot-builder
-
-RUN apt-get update && apt-get install -y --no-install-recommends kpartx qemu-user-static wget unzip \
-    \
-    # Download image file from the latest Raspberry Pi OS ARM64 release
-    && wget --no-check-certificate -qOimage.zip https://downloads.raspberrypi.org/raspios_arm64_latest && unzip image.zip && rm image.zip \
-    \
-    # Mount the sysroot partition
-    && kpartx -a -v *.img && sleep 5 && mount -o loop /dev/mapper/loop0p2 /sysroot \
-    \
-    # Prepare it to be chroot-ed
-    && cp $(which qemu-aarch64-static) /sysroot/$(qemu-aarch64-static) \
-    \
-    # Install Urho3D prerequisite packages in chroot jail
-    && chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2' \
-    \
-    # Fix broken symbolic links
-    && for l in $(find /sysroot/usr/lib/aarch64-linux-gnu -xtype l); do ln -sf ../../..$(readlink $l) $l; done
 
 ##
 

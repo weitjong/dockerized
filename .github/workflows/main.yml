@@ -58,7 +58,7 @@ jobs:
         project: [urho3d]
         platform: [native, mingw, android, web]
         include:
-          # {project: urho3d, platform: rpi, chroot: chroot}
+          - {project: urho3d, platform: rpi, chroot: chroot}
           - {project: urho3d, platform: arm, chroot: chroot}
     env:
       tag: weitjong/dockerized-${{ matrix.project }}-${{ matrix.platform }}
