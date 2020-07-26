@@ -45,8 +45,8 @@ jobs:
       - name: Push
         if: github.event_name == 'push'
         run: |
-          echo ${{ secrets.DOCKER_PASSWORD }} |docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin && \
-          docker push $tag && \
+          echo ${{ secrets.DOCKER_PASSWORD }} |docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          docker push $tag
           docker logout
   platform:
     name: Platform
@@ -58,21 +58,26 @@ jobs:
         project: [urho3d]
         platform: [native, mingw, android, web]
         include:
-          # {project: urho3d, platform: rpi, chroot: true}
-          - {project: urho3d, platform: arm, chroot: true}
+          # {project: urho3d, platform: rpi, chroot: chroot}
+          - {project: urho3d, platform: arm, chroot: chroot}
     env:
       tag: weitjong/dockerized-${{ matrix.project }}-${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
       - name: Build
         run: |
-          if '${{ matrix.chroot }}'; then sudo apt-get update && sudo apt-get install -y --no-install-recommends qemu-user-static; fi && \
+          if [[ '${{ matrix.chroot }}' ]]; then sudo apt-get update && sudo apt-get install -y --no-install-recommends qemu-user-static; fi
           docker build -t $tag ${{ matrix.project }}/${{ matrix.platform }}
       - name: Push
         if: github.event_name == 'push'
         run: |
-          echo ${{ secrets.DOCKER_PASSWORD }} |docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin && \
-          docker push $tag && \
+          echo ${{ secrets.DOCKER_PASSWORD }} |docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          docker push $tag
+          if [[ '${{ matrix.project }}' == 'urho3d' ]]; then
+            urho3d_tag=urho3d/dockerized-${{ matrix.platform }}
+            docker tag $tag $urho3d_tag
+            docker push $urho3d_tag
+          fi
           docker logout
 
 ...
