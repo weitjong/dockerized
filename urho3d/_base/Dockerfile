@@ -44,13 +44,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     doxygen graphviz locales \
     \
     # Misc.
-    openssh-client rake rsync sudo tzdata vim wget \
+    openssh-client rake rsync sudo tzdata vim wget && \
     \
     # Download CMake directly from its provider
-    && wget -qO- https://github.com/Kitware/CMake/releases/download/v$cmake_version/cmake-$cmake_version-Linux-x86_64.tar.gz |tar --strip-components=1 -xzC /usr/local \
+    wget -qO- https://github.com/Kitware/CMake/releases/download/v$cmake_version/cmake-$cmake_version-Linux-x86_64.tar.gz |tar --strip-components=1 -xzC /usr/local && \
     \
     # Setup default locale
-    && locale-gen $lang && update-locale LANG=$lang
+    locale-gen $lang && update-locale LANG=$lang && \
+    \
+    # Clean up
+    apt-get clean
 
 VOLUME /home/urho3d
 

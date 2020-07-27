@@ -64,6 +64,13 @@ jobs:
       tag: weitjong/dockerized-${{ matrix.project }}-${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
+      - name: Free up space
+        if: matrix.chroot == 'chroot'
+        run: |
+          sudo swapoff -a
+          sudo rm -f /swapfile
+          sudo apt-get clean
+          sudo rm -rf microsoft mssql-toos cni hostedtoolcache /usr/local/share/boost /usr/share/dotnet /usr/local/lib/android /opt/ghc "$AGENT_TOOLSDIRECTORY"
       - name: Build
         run: |
           if [[ '${{ matrix.chroot }}' ]]; then sudo apt-get update && sudo apt-get install -y --no-install-recommends qemu-user-static; fi

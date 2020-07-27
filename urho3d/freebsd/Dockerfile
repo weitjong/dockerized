@@ -25,20 +25,20 @@ FROM ubuntu:latest AS builder
 ARG ftp_server=ftp://ftp1.us.freebsd.org/pub/FreeBSD/releases/amd64/amd64/
 ARG freebsd_version=12.0-RELEASE
 
-RUN apt-get update && apt-get install -y --no-install-recommends qemu-user-static wget xz-utils \
+RUN apt-get update && apt-get install -y --no-install-recommends qemu-user-static wget xz-utils && \
     \
     # Download base compressed file from the specified FreeBSD release
-    && mkdir /sysroot && wget -qO- ${ftp_server}/${freebsd_version}/base.txz |tar -xJC /sysroot
-
+    mkdir /sysroot && wget -qO- ${ftp_server}/${freebsd_version}/base.txz |tar -xJC /sysroot && \
+    \
     # Prepare it to be chroot-ed
-RUN cp $(which qemu-arm-static) /sysroot/$(which qemu-arm-static) \
+    cp $(which qemu-arm-static) /sysroot/$(which qemu-arm-static) && \
     \
     # Install Urho3D prerequisite packages in chroot jail
 # It is not possible to execute FreeBSD binary using GNU/Linux QEMU user mode
-#    && chroot /sysroot /bin/sh -c 'echo TODO: at least we need X11' \
+#    chroot /sysroot /bin/sh -c 'echo TODO: at least we need X11' && \
     \
     # Fix broken symbolic links
-    && true
+    true
 
 ##
 
@@ -47,12 +47,12 @@ FROM urho3d/dockerized:latest
 ENV CC=clang CXX=clang++ \
     URHO3D_PCH=0
 
-RUN apt-get update && apt-get install -y --no-install-recommends clang \
+RUN apt-get update && apt-get install -y --no-install-recommends clang && \
     \
     # 64-bit FreeBSD sysroot
     \
     # 32-bit FreeBSD sysroot not yet supported
-    && true
+    true
 
 # Copy prepared sysroot from builder stage (64-bit only for now)
 COPY --from=builder /sysroot/lib/ /amd64-sysroot/lib/

@@ -22,7 +22,7 @@
 
 FROM urho3d/dockerized:latest
 
-RUN apt-get update && apt-get install -y --no-install-recommends mingw-w64
+RUN apt-get update && apt-get install -y --no-install-recommends mingw-w64 && apt-get clean
 
 COPY sysroot/ /
 

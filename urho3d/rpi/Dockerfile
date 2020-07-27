@@ -20,46 +20,46 @@
 # THE SOFTWARE.
 #
 
-FROM weitjong/sysroots:raspios_arm64 AS rpi64-sysroot-builder
-
-RUN rm -rf /sysroot/home \
-    \
-    # Install Urho3D prerequisite packages in chroot jail
-    && chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2'
-
-##
-
 FROM weitjong/toolchains:armv7-rpi2-linux-gnueabihf AS armv7-rpi2-linux-gnueabihf
 
-RUN rm /home/ng/x-tools/armv7-rpi2-linux-gnueabihf/build.log.bz2 \
-    && mv /home/ng/x-tools/armv7-rpi2-linux-gnueabihf/armv7-rpi2-linux-gnueabihf/sysroot/ /sysroot
+RUN rm /home/ng/x-tools/armv7-rpi2-linux-gnueabihf/build.log.bz2 && \
+    mv /home/ng/x-tools/armv7-rpi2-linux-gnueabihf/armv7-rpi2-linux-gnueabihf/sysroot/ /sysroot
 
 ##
 
 FROM weitjong/toolchains:aarch64-rpi3-linux-gnu AS aarch64-rpi3-linux-gnu
 
-RUN rm /home/ng/x-tools/aarch64-rpi3-linux-gnu/build.log.bz2 \
-    && mv /home/ng/x-tools/aarch64-rpi3-linux-gnu/aarch64-rpi3-linux-gnu/sysroot/ /sysroot
+RUN rm /home/ng/x-tools/aarch64-rpi3-linux-gnu/build.log.bz2 && \
+    mv /home/ng/x-tools/aarch64-rpi3-linux-gnu/aarch64-rpi3-linux-gnu/sysroot/ /sysroot
 
 ##
 
 FROM ubuntu:latest AS rpi-sysroot-builder
 
-RUN apt-get update && apt-get install -y --no-install-recommends qemu-user-static wget xz-utils \
+RUN apt-get update && apt-get install -y --no-install-recommends qemu-user-static wget xz-utils && \
     \
     # Download root compressed file from the latest Raspberry Pi OS lite release
-    && mkdir /sysroot && wget --no-check-certificate -qO- https://downloads.raspberrypi.org/raspios_lite_armhf/root.tar.xz |tar -xJC /sysroot \
+    mkdir /sysroot && wget --no-check-certificate -qO- https://downloads.raspberrypi.org/raspios_lite_armhf/root.tar.xz |tar -xJC /sysroot && \
     \
     # Prepare it to be chroot-ed
-    && cp $(which qemu-arm-static) /sysroot/$(which qemu-arm-static) \
-    && perl -pi -e 's/^/#/g' /sysroot/etc/ld.so.preload \
+    cp $(which qemu-arm-static) /sysroot/$(which qemu-arm-static) && \
+    perl -pi -e 's/^/#/g' /sysroot/etc/ld.so.preload && \
     \
     # Install Urho3D prerequisite packages in chroot jail
-    && chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2' \
+    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2' && \
     \
     # Fix broken symbolic links
-    && for l in $(find /sysroot/lib -xtype l); do ln -sf $(basename $(readlink $l)) $l; done \
-    && for l in $(find /sysroot/usr/lib/arm-linux-gnueabihf -xtype l); do ln -sf ../../..$(readlink $l) $l; done
+    for l in $(find /sysroot/lib -xtype l); do ln -sf $(basename $(readlink $l)) $l; done && \
+    for l in $(find /sysroot/usr/lib/arm-linux-gnueabihf -xtype l); do ln -sf ../../..$(readlink $l) $l; done
+
+##
+
+FROM weitjong/sysroots:raspios_arm64 AS rpi64-sysroot-builder
+
+RUN rm -rf /sysroot/home && \
+    \
+    # Install Urho3D prerequisite packages in chroot jail
+    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2'
 
 ##
 
@@ -85,8 +85,8 @@ COPY --from=rpi64-sysroot-builder /sysroot/usr/lib/ /rpi64-sysroot/usr/lib/
 COPY --from=aarch64-rpi3-linux-gnu /sysroot/ /rpi64-sysroot/
 COPY --from=aarch64-rpi3-linux-gnu /home/ng/x-tools/ /rpi-tools/
 #
-RUN cd /rpi-tools/armv7-rpi2-linux-gnueabihf/armv7-rpi2-linux-gnueabihf && ln -s /rpi-sysroot sysroot \
-    && cd /rpi-tools/aarch64-rpi3-linux-gnu/aarch64-rpi3-linux-gnu && ln -s /rpi64-sysroot sysroot
+RUN cd /rpi-tools/armv7-rpi2-linux-gnueabihf/armv7-rpi2-linux-gnueabihf && ln -s /rpi-sysroot sysroot && \
+    cd /rpi-tools/aarch64-rpi3-linux-gnu/aarch64-rpi3-linux-gnu && ln -s /rpi64-sysroot sysroot
 
 COPY sysroot/ /
 
