@@ -59,7 +59,7 @@ FROM weitjong/sysroots:raspios_arm64 AS rpi64-sysroot-builder
 RUN rm -rf /sysroot/home && \
     \
     # Install Urho3D prerequisite packages in chroot jail
-    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libgles2-mesa-dev libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2'
+    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libdrm-dev libgbm-dev libgles2-mesa-dev libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2'
 
 ##
 
