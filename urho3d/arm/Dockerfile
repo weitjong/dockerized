@@ -20,7 +20,21 @@
 # THE SOFTWARE.
 #
 
-FROM ubuntu:latest AS builder-armhf
+FROM weitjong/toolchains:arm-cortex_a15-linux-gnueabihf AS arm-cortex_a15-linux-gnueabihf
+
+RUN rm /home/ng/x-tools/arm-cortex_a15-linux-gnueabihf/build.log.bz2 && \
+    mv /home/ng/x-tools/arm-cortex_a15-linux-gnueabihf/arm-cortex_a15-linux-gnueabihf/sysroot/ /sysroot
+
+##
+
+FROM weitjong/toolchains:aarch64-unknown-linux-gnu AS aarch64-unknown-linux-gnu
+
+RUN rm /home/ng/x-tools/aarch64-unknown-linux-gnu/build.log.bz2 && \
+    mv /home/ng/x-tools/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot/ /sysroot
+
+##
+
+FROM ubuntu:latest AS arm-sysroot-builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qemu-user-static wget xz-utils && \
     \
@@ -42,7 +56,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qem
 
 ##
 
-FROM ubuntu:latest AS builder-arm64
+FROM ubuntu:latest AS arm64-sysroot-builder
 
 RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qemu-user-static wget xz-utils && \
     \
@@ -66,27 +80,28 @@ RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qem
 
 FROM urho3d/dockerized:latest
 
-ARG tool_version=5.5.0-2017.10-x86_64
-ARG armhf_triplet=arm-linux-gnueabihf
-ARG arm64_triplet=aarch64-linux-gnu
-
-ENV ARMHF_PREFIX=/gcc-linaro-${tool_version}_$armhf_triplet/bin/$armhf_triplet \
-    ARM64_PREFIX=/gcc-linaro-${tool_version}_$arm64_triplet/bin/$arm64_triplet \
-    ARMHF_SYSROOT=/armhf-sysroot \
+ENV ARM32_PREFIX=/arm-tools/arm-cortex_a15-linux-gnueabihf/bin/arm-cortex_a15-linux-gnueabihf \
+    ARM64_PREFIX=/arm-tools/aarch64-unknown-linux-gnu/bin/aarch64-unknown-linux-gnu \
+    ARM32_SYSROOT=/arm-sysroot \
     ARM64_SYSROOT=/arm64-sysroot
 
-RUN for triplet in $armhf_triplet $arm64_triplet; do tool=gcc-linaro-${tool_version}_$triplet && \
-    wget -qO- https://releases.linaro.org/components/toolchain/binaries/latest-5/$triplet/$tool.tar.xz |tar -xJ; done
-
-# Copy prepared sysroot from builder stage
-COPY --from=builder-armhf /sysroot/opt/ /armhf-sysroot/opt/
-COPY --from=builder-armhf /sysroot/lib/ /armhf-sysroot/lib/
-COPY --from=builder-armhf /sysroot/usr/include/ /armhf-sysroot/usr/include/
-COPY --from=builder-armhf /sysroot/usr/lib/ /armhf-sysroot/usr/lib/
-COPY --from=builder-arm64 /sysroot/opt/ /arm64-sysroot/opt/
-COPY --from=builder-arm64 /sysroot/lib/ /arm64-sysroot/lib/
-COPY --from=builder-arm64 /sysroot/usr/include/ /arm64-sysroot/usr/include/
-COPY --from=builder-arm64 /sysroot/usr/lib/ /arm64-sysroot/usr/lib/
+# Copy prepared toolchain and sysroot from the builder stages
+COPY --from=arm-sysroot-builder /sysroot/opt/ /arm-sysroot/opt/
+COPY --from=arm-sysroot-builder /sysroot/lib/ /arm-sysroot/lib/
+COPY --from=arm-sysroot-builder /sysroot/usr/include/ /arm-sysroot/usr/include/
+COPY --from=arm-sysroot-builder /sysroot/usr/lib/ /arm-sysroot/usr/lib/
+COPY --from=arm-cortex_a15-linux-gnueabihf /sysroot/ /arm-sysroot/
+COPY --from=arm-cortex_a15-linux-gnueabihf /home/ng/x-tools/ /arm-tools/
+#
+COPY --from=arm64-sysroot-builder /sysroot/opt/ /arm64-sysroot/opt/
+COPY --from=arm64-sysroot-builder /sysroot/lib/ /arm64-sysroot/lib/
+COPY --from=arm64-sysroot-builder /sysroot/usr/include/ /arm64-sysroot/usr/include/
+COPY --from=arm64-sysroot-builder /sysroot/usr/lib/ /arm64-sysroot/usr/lib/
+COPY --from=aarch64-unknown-linux-gnu /sysroot/ /arm64-sysroot/
+COPY --from=aarch64-unknown-linux-gnu /home/ng/x-tools/ /arm-tools/
+#
+RUN cd /arm-tools/arm-cortex_a15-linux-gnueabihf/arm-cortex_a15-linux-gnueabihf && ln -s /arm-sysroot sysroot && \
+    cd /arm-tools/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu && ln -s /arm64-sysroot sysroot
 
 COPY sysroot/ /
 

@@ -23,7 +23,7 @@
 
 # Select the compiler toolchain based on the URHO3D_64BIT env var
 if [[ "$URHO3D_64BIT" == "0" ]]; then
-    export ARM_PREFIX=$ARMHF_PREFIX ARM_SYSROOT=$ARMHF_SYSROOT
+    export ARM_PREFIX=$ARM32_PREFIX ARM_SYSROOT=$ARM32_SYSROOT
 else
     export ARM_PREFIX=$ARM64_PREFIX ARM_SYSROOT=$ARM64_SYSROOT
 fi
