@@ -20,17 +20,17 @@
 # THE SOFTWARE.
 #
 
-FROM weitjong/toolchains:armv7-rpi2-linux-gnueabihf AS armv7-rpi2-linux-gnueabihf
+FROM weitjong/toolchains:armv7-rpi2-linux-gnueabihf AS armv7-linux-gnueabihf
 
-RUN rm /home/ng/x-tools/armv7-rpi2-linux-gnueabihf/build.log.bz2 && \
-    mv /home/ng/x-tools/armv7-rpi2-linux-gnueabihf/armv7-rpi2-linux-gnueabihf/sysroot/ /sysroot
+RUN rm /home/ng/x-tools/armv7-linux-gnueabihf/build.log.bz2 && \
+    mv /home/ng/x-tools/armv7-linux-gnueabihf/armv7-linux-gnueabihf/sysroot/ /sysroot
 
 ##
 
-FROM weitjong/toolchains:aarch64-rpi3-linux-gnu AS aarch64-rpi3-linux-gnu
+FROM weitjong/toolchains:aarch64-rpi3-linux-gnu AS aarch64-linux-gnu
 
-RUN rm /home/ng/x-tools/aarch64-rpi3-linux-gnu/build.log.bz2 && \
-    mv /home/ng/x-tools/aarch64-rpi3-linux-gnu/aarch64-rpi3-linux-gnu/sysroot/ /sysroot
+RUN rm /home/ng/x-tools/aarch64-linux-gnu/build.log.bz2 && \
+    mv /home/ng/x-tools/aarch64-linux-gnu/aarch64-linux-gnu/sysroot/ /sysroot
 
 ##
 
@@ -65,8 +65,8 @@ RUN rm -rf /sysroot/home && \
 
 FROM urho3d/dockerized:latest
 
-ENV RPI32_PREFIX=/rpi-tools/armv7-rpi2-linux-gnueabihf/bin/armv7-rpi2-linux-gnueabihf \
-    RPI64_PREFIX=/rpi-tools/aarch64-rpi3-linux-gnu/bin/aarch64-rpi3-linux-gnu \
+ENV RPI32_PREFIX=/rpi-tools/armv7-linux-gnueabihf/bin/armv7-linux-gnueabihf \
+    RPI64_PREFIX=/rpi-tools/aarch64-linux-gnu/bin/aarch64-linux-gnu \
     RPI32_SYSROOT=/rpi-sysroot \
     RPI64_SYSROOT=/rpi64-sysroot
 
@@ -75,18 +75,18 @@ COPY --from=rpi-sysroot-builder /sysroot/opt/ /rpi-sysroot/opt/
 COPY --from=rpi-sysroot-builder /sysroot/lib/ /rpi-sysroot/lib/
 COPY --from=rpi-sysroot-builder /sysroot/usr/include/ /rpi-sysroot/usr/include/
 COPY --from=rpi-sysroot-builder /sysroot/usr/lib/ /rpi-sysroot/usr/lib/
-COPY --from=armv7-rpi2-linux-gnueabihf /sysroot/ /rpi-sysroot/
-COPY --from=armv7-rpi2-linux-gnueabihf /home/ng/x-tools/ /rpi-tools/
+COPY --from=armv7-linux-gnueabihf /sysroot/ /rpi-sysroot/
+COPY --from=armv7-linux-gnueabihf /home/ng/x-tools/ /rpi-tools/
 #
 COPY --from=rpi64-sysroot-builder /sysroot/opt/ /rpi64-sysroot/opt/
 COPY --from=rpi64-sysroot-builder /sysroot/lib/ /rpi64-sysroot/lib/
 COPY --from=rpi64-sysroot-builder /sysroot/usr/include/ /rpi64-sysroot/usr/include/
 COPY --from=rpi64-sysroot-builder /sysroot/usr/lib/ /rpi64-sysroot/usr/lib/
-COPY --from=aarch64-rpi3-linux-gnu /sysroot/ /rpi64-sysroot/
-COPY --from=aarch64-rpi3-linux-gnu /home/ng/x-tools/ /rpi-tools/
+COPY --from=aarch64-linux-gnu /sysroot/ /rpi64-sysroot/
+COPY --from=aarch64-linux-gnu /home/ng/x-tools/ /rpi-tools/
 #
-RUN cd /rpi-tools/armv7-rpi2-linux-gnueabihf/armv7-rpi2-linux-gnueabihf && ln -s /rpi-sysroot sysroot && \
-    cd /rpi-tools/aarch64-rpi3-linux-gnu/aarch64-rpi3-linux-gnu && ln -s /rpi64-sysroot sysroot
+RUN cd /rpi-tools/armv7-linux-gnueabihf/armv7-linux-gnueabihf && ln -s /rpi-sysroot sysroot && \
+    cd /rpi-tools/aarch64-linux-gnu/aarch64-linux-gnu && ln -s /rpi64-sysroot sysroot
 
 COPY sysroot/ /
 

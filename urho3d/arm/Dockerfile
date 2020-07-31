@@ -20,17 +20,17 @@
 # THE SOFTWARE.
 #
 
-FROM weitjong/toolchains:arm-cortex_a15-linux-gnueabihf AS arm-cortex_a15-linux-gnueabihf
+FROM weitjong/toolchains:arm-cortex_a15-linux-gnueabihf AS arm-linux-gnueabihf
 
-RUN rm /home/ng/x-tools/arm-cortex_a15-linux-gnueabihf/build.log.bz2 && \
-    mv /home/ng/x-tools/arm-cortex_a15-linux-gnueabihf/arm-cortex_a15-linux-gnueabihf/sysroot/ /sysroot
+RUN rm /home/ng/x-tools/arm-linux-gnueabihf/build.log.bz2 && \
+    mv /home/ng/x-tools/arm-linux-gnueabihf/arm-linux-gnueabihf/sysroot/ /sysroot
 
 ##
 
-FROM weitjong/toolchains:aarch64-unknown-linux-gnu AS aarch64-unknown-linux-gnu
+FROM weitjong/toolchains:aarch64-unknown-linux-gnu AS aarch64-linux-gnu
 
-RUN rm /home/ng/x-tools/aarch64-unknown-linux-gnu/build.log.bz2 && \
-    mv /home/ng/x-tools/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu/sysroot/ /sysroot
+RUN rm /home/ng/x-tools/aarch64-linux-gnu/build.log.bz2 && \
+    mv /home/ng/x-tools/aarch64-linux-gnu/aarch64-linux-gnu/sysroot/ /sysroot
 
 ##
 
@@ -80,8 +80,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qem
 
 FROM urho3d/dockerized:latest
 
-ENV ARM32_PREFIX=/arm-tools/arm-cortex_a15-linux-gnueabihf/bin/arm-cortex_a15-linux-gnueabihf \
-    ARM64_PREFIX=/arm-tools/aarch64-unknown-linux-gnu/bin/aarch64-unknown-linux-gnu \
+ENV ARM32_PREFIX=/arm-tools/arm-linux-gnueabihf/bin/arm-linux-gnueabihf \
+    ARM64_PREFIX=/arm-tools/aarch64-linux-gnu/bin/aarch64-linux-gnu \
     ARM32_SYSROOT=/arm-sysroot \
     ARM64_SYSROOT=/arm64-sysroot
 
@@ -90,18 +90,18 @@ COPY --from=arm-sysroot-builder /sysroot/opt/ /arm-sysroot/opt/
 COPY --from=arm-sysroot-builder /sysroot/lib/ /arm-sysroot/lib/
 COPY --from=arm-sysroot-builder /sysroot/usr/include/ /arm-sysroot/usr/include/
 COPY --from=arm-sysroot-builder /sysroot/usr/lib/ /arm-sysroot/usr/lib/
-COPY --from=arm-cortex_a15-linux-gnueabihf /sysroot/ /arm-sysroot/
-COPY --from=arm-cortex_a15-linux-gnueabihf /home/ng/x-tools/ /arm-tools/
+COPY --from=arm-linux-gnueabihf /sysroot/ /arm-sysroot/
+COPY --from=arm-linux-gnueabihf /home/ng/x-tools/ /arm-tools/
 #
 COPY --from=arm64-sysroot-builder /sysroot/opt/ /arm64-sysroot/opt/
 COPY --from=arm64-sysroot-builder /sysroot/lib/ /arm64-sysroot/lib/
 COPY --from=arm64-sysroot-builder /sysroot/usr/include/ /arm64-sysroot/usr/include/
 COPY --from=arm64-sysroot-builder /sysroot/usr/lib/ /arm64-sysroot/usr/lib/
-COPY --from=aarch64-unknown-linux-gnu /sysroot/ /arm64-sysroot/
-COPY --from=aarch64-unknown-linux-gnu /home/ng/x-tools/ /arm-tools/
+COPY --from=aarch64-linux-gnu /sysroot/ /arm64-sysroot/
+COPY --from=aarch64-linux-gnu /home/ng/x-tools/ /arm-tools/
 #
-RUN cd /arm-tools/arm-cortex_a15-linux-gnueabihf/arm-cortex_a15-linux-gnueabihf && ln -s /arm-sysroot sysroot && \
-    cd /arm-tools/aarch64-unknown-linux-gnu/aarch64-unknown-linux-gnu && ln -s /arm64-sysroot sysroot
+RUN cd /arm-tools/arm-linux-gnueabihf/arm-linux-gnueabihf && ln -s /arm-sysroot sysroot && \
+    cd /arm-tools/aarch64-linux-gnu/aarch64-linux-gnu && ln -s /arm64-sysroot sysroot
 
 COPY sysroot/ /
 
