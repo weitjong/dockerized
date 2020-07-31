@@ -49,7 +49,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qem
     rm /sysroot/etc/resolv.conf && echo nameserver 8.8.8.8 >/sysroot/etc/resolv.conf && \
     \
     # Install Urho3D prerequisite packages in chroot jail
-    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libgles2-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libudev-dev' && \
+    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libgles2-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev' && \
     \
     # Fix broken symbolic links
     for l in $(find /sysroot/usr/lib/arm-linux-gnueabihf -xtype l); do ln -sf ../../..$(readlink $l) $l; done
@@ -71,7 +71,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qem
     rm /sysroot/etc/resolv.conf && echo nameserver 8.8.8.8 >/sysroot/etc/resolv.conf && \
     \
     # Install Urho3D prerequisite packages in chroot jail
-    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libgles2-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libudev-dev' && \
+    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libgles2-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev' && \
     \
     # Fix broken symbolic links
     for l in $(find /sysroot/usr/lib/aarch64-linux-gnu -xtype l); do ln -sf ../../..$(readlink $l) $l; done
