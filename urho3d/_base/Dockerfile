@@ -24,8 +24,9 @@ FROM ubuntu:latest
 
 LABEL maintainer="Yao Wei Tjong <weitjong@gmail.com>" \
       description="Dockerized build environment for Urho3D" \
-      source-repo=https://github.com/urho3d/dockerized \
-      binary-repo=https://hub.docker.com/u/urho3d
+      source-repo=https://github.com/weitjong/dockerized \
+      binary-repo=https://hub.docker.com/u/weitjong \
+      retag-binary-repo=https://hub.docker.com/u/urho3d
 
 ARG lang=en_US.UTF-8
 ARG cmake_version=3.17.3
