@@ -37,7 +37,7 @@ jobs:
       matrix:
         project: [urho3d]
     env:
-      tag: weitjong/dockerized-${{ matrix.project }}-base
+      tag: weitjong/dockerized:${{ matrix.project }}-base
     steps:
       - uses: actions/checkout@v2        
       - name: Build
@@ -61,7 +61,7 @@ jobs:
           - {project: urho3d, platform: rpi, chroot: chroot}
           - {project: urho3d, platform: arm, chroot: chroot}
     env:
-      tag: weitjong/dockerized-${{ matrix.project }}-${{ matrix.platform }}
+      tag: weitjong/dockerized:${{ matrix.project }}-${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2
       - name: Build
