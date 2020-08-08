@@ -46,11 +46,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends qemu-user-stati
     perl -pi -e 's/^/#/g' /sysroot/etc/ld.so.preload && \
     \
     # Install Urho3D prerequisite packages in chroot jail
-    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2' && \
-    \
-    # Fix broken symbolic links
-    for l in $(find /sysroot/lib -xtype l); do ln -sf $(basename $(readlink $l)) $l; done && \
-    for l in $(find /sysroot/usr/lib/arm-linux-gnueabihf -xtype l); do ln -sf ../../..$(readlink $l) $l; done
+    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2'
 
 ##
 
@@ -86,7 +82,9 @@ COPY --from=aarch64-linux-gnu /sysroot/ /rpi64-sysroot/
 COPY --from=aarch64-linux-gnu /home/ng/x-tools/ /rpi-tools/
 #
 RUN cd /rpi-tools/armv7-linux-gnueabihf/armv7-linux-gnueabihf && ln -s /rpi-sysroot sysroot && \
-    cd /rpi-tools/aarch64-linux-gnu/aarch64-linux-gnu && ln -s /rpi64-sysroot sysroot
+    cd /rpi-tools/aarch64-linux-gnu/aarch64-linux-gnu && ln -s /rpi64-sysroot sysroot && \
+    for l in $(find /rpi-sysroot -xtype l -name \*.so); do ln -sf /rpi-sysroot/$(readlink $l) $l; done && \
+    for l in $(find /rpi64-sysroot -xtype l -name \*.so); do ln -sf /rpi64-sysroot/$(readlink $l) $l; done
 
 COPY sysroot/ /
 
