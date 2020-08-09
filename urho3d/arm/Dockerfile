@@ -52,7 +52,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qem
     chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libgles2-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev' && \
     \
     # Fix broken symbolic links
-    for l in $(find /sysroot/usr/lib/arm-linux-gnueabihf -xtype l); do ln -sf ../../..$(readlink $l) $l; done
+    for l in $(find /sysroot/usr/lib/arm-linux-gnueabihf -xtype l); do ln -sf ../../..$(readlink $l) $l; done && \
+    mkdir -p /arm-sysroot/usr && for d in opt lib usr/include usr/lib; do mv /sysroot/$d /arm-sysroot/$(dirname $d); done
+
+COPY --from=arm-linux-gnueabihf /sysroot/ /arm-sysroot/
 
 ##
 
@@ -74,7 +77,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qem
     chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libgles2-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev' && \
     \
     # Fix broken symbolic links
-    for l in $(find /sysroot/usr/lib/aarch64-linux-gnu -xtype l); do ln -sf ../../..$(readlink $l) $l; done
+    for l in $(find /sysroot/usr/lib/aarch64-linux-gnu -xtype l); do ln -sf ../../..$(readlink $l) $l; done && \
+    mkdir -p /arm64-sysroot/usr && for d in opt lib usr/include usr/lib; do mv /sysroot/$d /arm64-sysroot/$(dirname $d); done
+
+COPY --from=aarch64-linux-gnu /sysroot/ /arm64-sysroot/
 
 ##
 
@@ -86,20 +92,12 @@ ENV ARM32_PREFIX=/arm-tools/arm-linux-gnueabihf/bin/arm-linux-gnueabihf \
     ARM64_SYSROOT=/arm64-sysroot
 
 # Copy prepared toolchain and sysroot from the builder stages
-COPY --from=arm-sysroot-builder /sysroot/opt/ /arm-sysroot/opt/
-COPY --from=arm-sysroot-builder /sysroot/lib/ /arm-sysroot/lib/
-COPY --from=arm-sysroot-builder /sysroot/usr/include/ /arm-sysroot/usr/include/
-COPY --from=arm-sysroot-builder /sysroot/usr/lib/ /arm-sysroot/usr/lib/
-COPY --from=arm-linux-gnueabihf /sysroot/ /arm-sysroot/
 COPY --from=arm-linux-gnueabihf /home/ng/x-tools/ /arm-tools/
-#
-COPY --from=arm64-sysroot-builder /sysroot/opt/ /arm64-sysroot/opt/
-COPY --from=arm64-sysroot-builder /sysroot/lib/ /arm64-sysroot/lib/
-COPY --from=arm64-sysroot-builder /sysroot/usr/include/ /arm64-sysroot/usr/include/
-COPY --from=arm64-sysroot-builder /sysroot/usr/lib/ /arm64-sysroot/usr/lib/
-COPY --from=aarch64-linux-gnu /sysroot/ /arm64-sysroot/
 COPY --from=aarch64-linux-gnu /home/ng/x-tools/ /arm-tools/
-#
+COPY --from=arm-sysroot-builder /arm-sysroot/ /arm-sysroot/
+COPY --from=arm64-sysroot-builder /arm64-sysroot/ /arm64-sysroot/
+
+# Fix broken symlinks
 RUN cd /arm-tools/arm-linux-gnueabihf/arm-linux-gnueabihf && ln -s /arm-sysroot sysroot && \
     cd /arm-tools/aarch64-linux-gnu/aarch64-linux-gnu && ln -s /arm64-sysroot sysroot
 

@@ -46,7 +46,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends qemu-user-stati
     perl -pi -e 's/^/#/g' /sysroot/etc/ld.so.preload && \
     \
     # Install Urho3D prerequisite packages in chroot jail
-    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2'
+    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2' && \
+    \
+    mkdir -p /rpi-sysroot/usr && for d in opt lib usr/include usr/lib; do mv /sysroot/$d /rpi-sysroot/$(dirname $d); done && \
+    \
+    # Quick fix - some how the old version of libm from sysroot interferes with newer compiler toolchain
+    rm /rpi-sysroot/lib/arm-linux-gnueabihf/libm-2.28.so
+
+COPY --from=armv7-linux-gnueabihf /sysroot/ /rpi-sysroot/
 
 ##
 
@@ -55,7 +62,11 @@ FROM weitjong/sysroots:raspios_arm64 AS rpi64-sysroot-builder
 RUN rm -rf /sysroot/home && \
     \
     # Install Urho3D prerequisite packages in chroot jail
-    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libdrm-dev libgbm-dev libgles2-mesa-dev libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2'
+    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libdrm-dev libgbm-dev libgles2-mesa-dev libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2' && \
+    \
+    mkdir -p /rpi64-sysroot/usr && for d in opt lib usr/include usr/lib; do mv /sysroot/$d /rpi64-sysroot/$(dirname $d); done
+
+COPY --from=aarch64-linux-gnu /sysroot/ /rpi64-sysroot/
 
 ##
 
@@ -67,20 +78,12 @@ ENV RPI32_PREFIX=/rpi-tools/armv7-linux-gnueabihf/bin/armv7-linux-gnueabihf \
     RPI64_SYSROOT=/rpi64-sysroot
 
 # Copy prepared toolchain and sysroot from the builder stages
-COPY --from=rpi-sysroot-builder /sysroot/opt/ /rpi-sysroot/opt/
-COPY --from=rpi-sysroot-builder /sysroot/lib/ /rpi-sysroot/lib/
-COPY --from=rpi-sysroot-builder /sysroot/usr/include/ /rpi-sysroot/usr/include/
-COPY --from=rpi-sysroot-builder /sysroot/usr/lib/ /rpi-sysroot/usr/lib/
-COPY --from=armv7-linux-gnueabihf /sysroot/ /rpi-sysroot/
 COPY --from=armv7-linux-gnueabihf /home/ng/x-tools/ /rpi-tools/
-#
-COPY --from=rpi64-sysroot-builder /sysroot/opt/ /rpi64-sysroot/opt/
-COPY --from=rpi64-sysroot-builder /sysroot/lib/ /rpi64-sysroot/lib/
-COPY --from=rpi64-sysroot-builder /sysroot/usr/include/ /rpi64-sysroot/usr/include/
-COPY --from=rpi64-sysroot-builder /sysroot/usr/lib/ /rpi64-sysroot/usr/lib/
-COPY --from=aarch64-linux-gnu /sysroot/ /rpi64-sysroot/
 COPY --from=aarch64-linux-gnu /home/ng/x-tools/ /rpi-tools/
-#
+COPY --from=rpi-sysroot-builder /rpi-sysroot/ /rpi-sysroot/
+COPY --from=rpi64-sysroot-builder /rpi64-sysroot/ /rpi64-sysroot/
+
+# Fix broken symlinks
 RUN cd /rpi-tools/armv7-linux-gnueabihf/armv7-linux-gnueabihf && ln -s /rpi-sysroot sysroot && \
     cd /rpi-tools/aarch64-linux-gnu/aarch64-linux-gnu && ln -s /rpi64-sysroot sysroot && \
     for l in $(find /rpi-sysroot -xtype l -name \*.so); do ln -sf /rpi-sysroot/$(readlink $l) $l; done && \
