@@ -46,10 +46,10 @@ RUN dpkg --add-architecture i386 && apt-get update && apt-get install -y --no-in
 
 # Quick workaround to avoid "E: Could not configure 'libc6:i386'" by separating the installation into two layers
 RUN apt-get install -y --no-install-recommends \
-    libglib2.0-dev:i386 libdbus-1-dev:i386 lib32readline6-dev libssl-dev:i386 libudev-dev:i386 && \
+    libglib2.0-dev:i386 libdbus-1-dev:i386 lib32readline6-dev libssl-dev:i386 libudev-dev:i386 \
     \
     # Clean up
-    apt-get clean
+ && apt-get clean
 
 COPY sysroot/ /
 

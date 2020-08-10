@@ -22,38 +22,38 @@
 
 FROM weitjong/toolchains:arm-cortex_a15-linux-gnueabihf AS arm-linux-gnueabihf
 
-RUN rm /home/ng/x-tools/arm-linux-gnueabihf/build.log.bz2 && \
-    mv /home/ng/x-tools/arm-linux-gnueabihf/arm-linux-gnueabihf/sysroot/ /sysroot
+RUN rm /home/ng/x-tools/arm-linux-gnueabihf/build.log.bz2 \
+ && mv /home/ng/x-tools/arm-linux-gnueabihf/arm-linux-gnueabihf/sysroot/ /sysroot
 
 ##
 
 FROM weitjong/toolchains:aarch64-unknown-linux-gnu AS aarch64-linux-gnu
 
-RUN rm /home/ng/x-tools/aarch64-linux-gnu/build.log.bz2 && \
-    mv /home/ng/x-tools/aarch64-linux-gnu/aarch64-linux-gnu/sysroot/ /sysroot
+RUN rm /home/ng/x-tools/aarch64-linux-gnu/build.log.bz2 \
+ && mv /home/ng/x-tools/aarch64-linux-gnu/aarch64-linux-gnu/sysroot/ /sysroot
 
 ##
 
 FROM ubuntu:latest AS arm-sysroot-builder
 
-RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qemu-user-static wget xz-utils && \
+RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qemu-user-static wget xz-utils \
     \
     # Get the latest LTS codename
-    name=$(lsb_release -c |cut -d':' -f2 |xargs) && \
+ && name=$(lsb_release -c |cut -d':' -f2 |xargs) \
     \
     # Download root compressed file from the matching Ubuntu cloud image
-    mkdir /sysroot && wget --no-check-certificate -qO- https://cloud-images.ubuntu.com/$name/current/$name-server-cloudimg-armhf-root.tar.xz |tar -xJC /sysroot && \
+ && mkdir /sysroot && wget --no-check-certificate -qO- https://cloud-images.ubuntu.com/$name/current/$name-server-cloudimg-armhf-root.tar.xz |tar -xJC /sysroot \
     \
     # Prepare it to be chroot-ed
-    cp $(which qemu-arm-static) /sysroot/$(which qemu-arm-static) && \
-    rm /sysroot/etc/resolv.conf && echo nameserver 8.8.8.8 >/sysroot/etc/resolv.conf && \
+ && cp $(which qemu-arm-static) /sysroot/$(which qemu-arm-static) \
+ && rm /sysroot/etc/resolv.conf && echo nameserver 8.8.8.8 >/sysroot/etc/resolv.conf \
     \
     # Install Urho3D prerequisite packages in chroot jail
-    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libgles2-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev' && \
+ && chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libgles2-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev' \
     \
     # Fix broken symbolic links
-    for l in $(find /sysroot/usr/lib/arm-linux-gnueabihf -xtype l); do ln -sf ../../..$(readlink $l) $l; done && \
-    mkdir -p /arm-sysroot/usr && for d in opt lib usr/include usr/lib; do mv /sysroot/$d /arm-sysroot/$(dirname $d); done
+ && for l in $(find /sysroot/usr/lib/arm-linux-gnueabihf -xtype l); do ln -sf ../../..$(readlink $l) $l; done \
+ && mkdir -p /arm-sysroot/usr && for d in opt lib usr/include usr/lib; do mv /sysroot/$d /arm-sysroot/$(dirname $d); done
 
 COPY --from=arm-linux-gnueabihf /sysroot/ /arm-sysroot/
 
@@ -61,24 +61,24 @@ COPY --from=arm-linux-gnueabihf /sysroot/ /arm-sysroot/
 
 FROM ubuntu:latest AS arm64-sysroot-builder
 
-RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qemu-user-static wget xz-utils && \
+RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qemu-user-static wget xz-utils \
     \
     # Get the latest LTS codename
-    name=$(lsb_release -c |cut -d':' -f2 |xargs) && \
+ && name=$(lsb_release -c |cut -d':' -f2 |xargs) \
     \
     # Download root compressed file from the matching Ubuntu cloud image
-    mkdir /sysroot && wget --no-check-certificate -qO- https://cloud-images.ubuntu.com/$name/current/$name-server-cloudimg-arm64-root.tar.xz |tar -xJC /sysroot && \
+ && mkdir /sysroot && wget --no-check-certificate -qO- https://cloud-images.ubuntu.com/$name/current/$name-server-cloudimg-arm64-root.tar.xz |tar -xJC /sysroot \
     \
     # Prepare it to be chroot-ed
-    cp $(which qemu-aarch64-static) /sysroot/$(which qemu-aarch64-static) && \
-    rm /sysroot/etc/resolv.conf && echo nameserver 8.8.8.8 >/sysroot/etc/resolv.conf && \
+ && cp $(which qemu-aarch64-static) /sysroot/$(which qemu-aarch64-static) \
+ && rm /sysroot/etc/resolv.conf && echo nameserver 8.8.8.8 >/sysroot/etc/resolv.conf \
     \
     # Install Urho3D prerequisite packages in chroot jail
-    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libgles2-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev' && \
+ && chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libgles2-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev' \
     \
     # Fix broken symbolic links
-    for l in $(find /sysroot/usr/lib/aarch64-linux-gnu -xtype l); do ln -sf ../../..$(readlink $l) $l; done && \
-    mkdir -p /arm64-sysroot/usr && for d in opt lib usr/include usr/lib; do mv /sysroot/$d /arm64-sysroot/$(dirname $d); done
+ && for l in $(find /sysroot/usr/lib/aarch64-linux-gnu -xtype l); do ln -sf ../../..$(readlink $l) $l; done \
+ && mkdir -p /arm64-sysroot/usr && for d in opt lib usr/include usr/lib; do mv /sysroot/$d /arm64-sysroot/$(dirname $d); done
 
 COPY --from=aarch64-linux-gnu /sysroot/ /arm64-sysroot/
 
@@ -98,8 +98,8 @@ COPY --from=arm-sysroot-builder /arm-sysroot/ /arm-sysroot/
 COPY --from=arm64-sysroot-builder /arm64-sysroot/ /arm64-sysroot/
 
 # Fix broken symlinks
-RUN cd /arm-tools/arm-linux-gnueabihf/arm-linux-gnueabihf && ln -s /arm-sysroot sysroot && \
-    cd /arm-tools/aarch64-linux-gnu/aarch64-linux-gnu && ln -s /arm64-sysroot sysroot
+RUN cd /arm-tools/arm-linux-gnueabihf/arm-linux-gnueabihf && ln -s /arm-sysroot sysroot \
+ && cd /arm-tools/aarch64-linux-gnu/aarch64-linux-gnu && ln -s /arm64-sysroot sysroot
 
 COPY sysroot/ /
 

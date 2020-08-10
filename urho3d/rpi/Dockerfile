@@ -22,33 +22,33 @@
 
 FROM weitjong/toolchains:armv7-rpi2-linux-gnueabihf AS armv7-linux-gnueabihf
 
-RUN rm /home/ng/x-tools/armv7-linux-gnueabihf/build.log.bz2 && \
-    mv /home/ng/x-tools/armv7-linux-gnueabihf/armv7-linux-gnueabihf/sysroot/ /sysroot
+RUN rm /home/ng/x-tools/armv7-linux-gnueabihf/build.log.bz2 \
+ && mv /home/ng/x-tools/armv7-linux-gnueabihf/armv7-linux-gnueabihf/sysroot/ /sysroot
 
 ##
 
 FROM weitjong/toolchains:aarch64-rpi3-linux-gnu AS aarch64-linux-gnu
 
-RUN rm /home/ng/x-tools/aarch64-linux-gnu/build.log.bz2 && \
-    mv /home/ng/x-tools/aarch64-linux-gnu/aarch64-linux-gnu/sysroot/ /sysroot
+RUN rm /home/ng/x-tools/aarch64-linux-gnu/build.log.bz2 \
+ && mv /home/ng/x-tools/aarch64-linux-gnu/aarch64-linux-gnu/sysroot/ /sysroot
 
 ##
 
 FROM ubuntu:latest AS rpi-sysroot-builder
 
-RUN apt-get update && apt-get install -y --no-install-recommends qemu-user-static wget xz-utils && \
+RUN apt-get update && apt-get install -y --no-install-recommends qemu-user-static wget xz-utils \
     \
     # Download root compressed file from the latest Raspberry Pi OS lite release
-    mkdir /sysroot && wget --no-check-certificate -qO- https://downloads.raspberrypi.org/raspios_lite_armhf/root.tar.xz |tar -xJC /sysroot && \
+ && mkdir /sysroot && wget --no-check-certificate -qO- https://downloads.raspberrypi.org/raspios_lite_armhf/root.tar.xz |tar -xJC /sysroot \
     \
     # Prepare it to be chroot-ed
-    cp $(which qemu-arm-static) /sysroot/$(which qemu-arm-static) && \
-    perl -pi -e 's/^/#/g' /sysroot/etc/ld.so.preload && \
+ && cp $(which qemu-arm-static) /sysroot/$(which qemu-arm-static) \
+ && perl -pi -e 's/^/#/g' /sysroot/etc/ld.so.preload \
     \
     # Install Urho3D prerequisite packages in chroot jail
-    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2' && \
+ && chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2' \
     \
-    mkdir -p /rpi-sysroot/usr && for d in opt lib usr/include usr/lib; do mv /sysroot/$d /rpi-sysroot/$(dirname $d); done
+ && mkdir -p /rpi-sysroot/usr && for d in opt lib usr/include usr/lib; do mv /sysroot/$d /rpi-sysroot/$(dirname $d); done
 
 COPY --from=armv7-linux-gnueabihf /sysroot/ /rpi-sysroot/
 
@@ -56,12 +56,12 @@ COPY --from=armv7-linux-gnueabihf /sysroot/ /rpi-sysroot/
 
 FROM weitjong/sysroots:raspios_arm64 AS rpi64-sysroot-builder
 
-RUN rm -rf /sysroot/home && \
+RUN rm -rf /sysroot/home \
     \
     # Install Urho3D prerequisite packages in chroot jail
-    chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libdrm-dev libgbm-dev libgles2-mesa-dev libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2' && \
+ && chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libdrm-dev libgbm-dev libgles2-mesa-dev libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2' \
     \
-    mkdir -p /rpi64-sysroot/usr && for d in opt lib usr/include usr/lib; do mv /sysroot/$d /rpi64-sysroot/$(dirname $d); done
+ && mkdir -p /rpi64-sysroot/usr && for d in opt lib usr/include usr/lib; do mv /sysroot/$d /rpi64-sysroot/$(dirname $d); done
 
 COPY --from=aarch64-linux-gnu /sysroot/ /rpi64-sysroot/
 
@@ -81,10 +81,10 @@ COPY --from=rpi-sysroot-builder /rpi-sysroot/ /rpi-sysroot/
 COPY --from=rpi64-sysroot-builder /rpi64-sysroot/ /rpi64-sysroot/
 
 # Fix broken symlinks
-RUN cd /rpi-tools/armv7-linux-gnueabihf/armv7-linux-gnueabihf && ln -s /rpi-sysroot sysroot && \
-    cd /rpi-tools/aarch64-linux-gnu/aarch64-linux-gnu && ln -s /rpi64-sysroot sysroot && \
-    for l in $(find /rpi-sysroot -xtype l -name \*.so); do ln -sf /rpi-sysroot$(readlink $l) $l; done && \
-    for l in $(find /rpi64-sysroot -xtype l -name \*.so); do ln -sf /rpi64-sysroot$(readlink $l) $l; done
+RUN cd /rpi-tools/armv7-linux-gnueabihf/armv7-linux-gnueabihf && ln -s /rpi-sysroot sysroot \
+ && cd /rpi-tools/aarch64-linux-gnu/aarch64-linux-gnu && ln -s /rpi64-sysroot sysroot \
+ && for l in $(find /rpi-sysroot -xtype l -name \*.so); do ln -sf /rpi-sysroot$(readlink $l) $l; done \
+ && for l in $(find /rpi64-sysroot -xtype l -name \*.so); do ln -sf /rpi64-sysroot$(readlink $l) $l; done
 
 COPY sysroot/ /
 

@@ -29,29 +29,29 @@ ARG platforms=18,21,30
 
 ENV ANDROID_HOME=/android-sdk ANDROID_CCACHE=/usr/bin/ccache
 
-RUN apt-get update && apt-get install -y --no-install-recommends openjdk-8-jdk ninja-build && \
+RUN apt-get update && apt-get install -y --no-install-recommends openjdk-8-jdk ninja-build \
     \
     # Download Android SDK command line tools only
-    mkdir -p $ANDROID_HOME/cmdline-tools && cd $ANDROID_HOME/cmdline-tools && wget -qO- $tool_url |jar x && \
+ && mkdir -p $ANDROID_HOME/cmdline-tools && cd $ANDROID_HOME/cmdline-tools && wget -qO- $tool_url |jar x \
     \
     # Fix missing configuration file
-    mkdir /root/.android && touch /root/.android/repositories.cfg && \
+ && mkdir /root/.android && touch /root/.android/repositories.cfg \
     \
     # Install Android NDK and other build tools, excluding CMake
-    (while :; do echo 'y'; sleep 1; done) |bash $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager \
+ && (while :; do echo 'y'; sleep 1; done) |bash $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager \
         "build-tools;$tool_version"\
         "ndk;$ndk_version" \
         'platform-tools' \
         $(bash -c "echo platforms\;android-{$platforms}") \
         # Hack quiet mode for sdkmanager
-        |grep -v '\[.*\]' && \
+        |grep -v '\[.*\]' \
     \
     # Strip-off some bits to reduce layer/image size
-    find $ANDROID_HOME/ndk/$ndk_version/platforms -mindepth 1 -maxdepth 1 \
-       |grep -Ev "\-($(bash -c 'echo ${platforms//,/\|}'))$" |xargs rm -rf && \
+ && find $ANDROID_HOME/ndk/$ndk_version/platforms -mindepth 1 -maxdepth 1 \
+       |grep -Ev "\-($(bash -c 'echo ${platforms//,/\|}'))$" |xargs rm -rf \
     \
     # Clean up
-    apt-get clean
+ && apt-get clean
 
 COPY sysroot/ /
 
