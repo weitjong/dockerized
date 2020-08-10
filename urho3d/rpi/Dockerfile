@@ -20,10 +20,10 @@
 # THE SOFTWARE.
 #
 
-FROM weitjong/toolchains:armv7-rpi2-linux-gnueabihf AS armv7-linux-gnueabihf
+FROM weitjong/toolchains:armv8-rpi3-linux-gnueabihf AS arm-linux-gnueabihf
 
-RUN rm /home/ng/x-tools/armv7-linux-gnueabihf/build.log.bz2 \
- && mv /home/ng/x-tools/armv7-linux-gnueabihf/armv7-linux-gnueabihf/sysroot/ /sysroot
+RUN rm /home/ng/x-tools/arm-linux-gnueabihf/build.log.bz2 \
+ && mv /home/ng/x-tools/arm-linux-gnueabihf/arm-linux-gnueabihf/sysroot/ /sysroot
 
 ##
 
@@ -50,7 +50,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends qemu-user-stati
     \
  && mkdir -p /rpi-sysroot/usr && for d in opt lib usr/include usr/lib; do mv /sysroot/$d /rpi-sysroot/$(dirname $d); done
 
-COPY --from=armv7-linux-gnueabihf /sysroot/ /rpi-sysroot/
+COPY --from=arm-linux-gnueabihf /sysroot/ /rpi-sysroot/
 
 ##
 
@@ -69,19 +69,19 @@ COPY --from=aarch64-linux-gnu /sysroot/ /rpi64-sysroot/
 
 FROM urho3d/dockerized:latest
 
-ENV RPI32_PREFIX=/rpi-tools/armv7-linux-gnueabihf/bin/armv7-linux-gnueabihf \
+ENV RPI32_PREFIX=/rpi-tools/arm-linux-gnueabihf/bin/arm-linux-gnueabihf \
     RPI64_PREFIX=/rpi-tools/aarch64-linux-gnu/bin/aarch64-linux-gnu \
     RPI32_SYSROOT=/rpi-sysroot \
     RPI64_SYSROOT=/rpi64-sysroot
 
 # Copy prepared toolchain and sysroot from the builder stages
-COPY --from=armv7-linux-gnueabihf /home/ng/x-tools/ /rpi-tools/
+COPY --from=arm-linux-gnueabihf /home/ng/x-tools/ /rpi-tools/
 COPY --from=aarch64-linux-gnu /home/ng/x-tools/ /rpi-tools/
 COPY --from=rpi-sysroot-builder /rpi-sysroot/ /rpi-sysroot/
 COPY --from=rpi64-sysroot-builder /rpi64-sysroot/ /rpi64-sysroot/
 
 # Fix broken symlinks
-RUN cd /rpi-tools/armv7-linux-gnueabihf/armv7-linux-gnueabihf && ln -s /rpi-sysroot sysroot \
+RUN cd /rpi-tools/arm-linux-gnueabihf/arm-linux-gnueabihf && ln -s /rpi-sysroot sysroot \
  && cd /rpi-tools/aarch64-linux-gnu/aarch64-linux-gnu && ln -s /rpi64-sysroot sysroot \
  && for l in $(find /rpi-sysroot -xtype l -name \*.so); do ln -sf /rpi-sysroot$(readlink $l) $l; done \
  && for l in $(find /rpi64-sysroot -xtype l -name \*.so); do ln -sf /rpi64-sysroot$(readlink $l) $l; done
