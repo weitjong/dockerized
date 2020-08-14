@@ -22,13 +22,9 @@
 
 FROM weitjong/toolchains:armv8-rpi3-linux-gnueabihf AS arm-linux-gnueabihf
 
-RUN rm /home/ng/x-tools/arm-linux-gnueabihf/build.log.bz2
-
 ##
 
 FROM weitjong/toolchains:aarch64-rpi3-linux-gnu AS aarch64-linux-gnu
-
-RUN rm /home/ng/x-tools/aarch64-linux-gnu/build.log.bz2
 
 ##
 
@@ -46,7 +42,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends qemu-user-stati
     # Install Urho3D prerequisite packages in chroot jail
  && chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2' \
     \
- && mkdir -p /rpi-sysroot/usr && for d in opt lib usr/include usr/lib; do mv /sysroot/$d /rpi-sysroot/$(dirname $d); done
+ && mkdir -p /rpi-sysroot/usr && for d in opt lib usr/include usr/lib; do mv /sysroot/$d /rpi-sysroot/$(dirname $d); done \
+    \
+    # Fix broken symlinks
+ && for l in $(find /rpi-sysroot -xtype l -name \*.so); do ln -sf /rpi-sysroot$(readlink $l) $l; done
 
 ##
 
@@ -57,7 +56,10 @@ RUN rm -rf /sysroot/home \
     # Install Urho3D prerequisite packages in chroot jail
  && chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libdrm-dev libgbm-dev libgles2-mesa-dev libx11-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev libevdev2' \
     \
- && mkdir -p /rpi64-sysroot/usr && for d in lib usr/include usr/lib; do mv /sysroot/$d /rpi64-sysroot/$(dirname $d); done
+ && mkdir -p /rpi64-sysroot/usr && for d in lib usr/include usr/lib; do mv /sysroot/$d /rpi64-sysroot/$(dirname $d); done \
+    \
+    # Fix broken symlinks
+ && for l in $(find /rpi64-sysroot -xtype l -name \*.so); do ln -sf /rpi64-sysroot$(readlink $l) $l; done
 
 ##
 
@@ -65,18 +67,14 @@ FROM urho3d/dockerized:latest
 
 ENV RPI32_PREFIX=/rpi-tools/arm-linux-gnueabihf/bin/arm-linux-gnueabihf \
     RPI64_PREFIX=/rpi-tools/aarch64-linux-gnu/bin/aarch64-linux-gnu \
-    RPI32_SYSROOT=/rpi-tools/arm-linux-gnueabihf/arm-linux-gnueabihf/sysroot \
-    RPI64_SYSROOT=/rpi-tools/aarch64-linux-gnu/aarch64-linux-gnu/sysroot
+    RPI32_SYSROOT=/rpi-sysroot \
+    RPI64_SYSROOT=/rpi64-sysroot
 
 # Copy prepared toolchain and sysroot from the builder stages
-COPY --from=arm-linux-gnueabihf /home/ng/x-tools/ /rpi-tools/
-COPY --from=aarch64-linux-gnu /home/ng/x-tools/ /rpi-tools/
-COPY --from=rpi-sysroot-builder /rpi-sysroot/ /rpi-tools/arm-linux-gnueabihf/arm-linux-gnueabihf/sysroot/
-COPY --from=rpi64-sysroot-builder /rpi64-sysroot/ /rpi-tools/aarch64-linux-gnu/aarch64-linux-gnu/sysroot/
-
-# Fix broken symlinks
-RUN for l in $(find $RPI32_SYSROOT -xtype l -name \*.so); do ln -sf $RPI32_SYSROOT$(readlink $l) $l; done \
- && for l in $(find $RPI64_SYSROOT -xtype l -name \*.so); do ln -sf $RPI64_SYSROOT$(readlink $l) $l; done
+COPY --from=arm-linux-gnueabihf /toolchain/ /rpi-tools/
+COPY --from=aarch64-linux-gnu /toolchain/ /rpi-tools/
+COPY --from=rpi-sysroot-builder /rpi-sysroot/ /rpi-sysroot/
+COPY --from=rpi64-sysroot-builder /rpi64-sysroot/ /rpi64-sysroot/
 
 COPY sysroot/ /
 

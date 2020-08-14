@@ -22,13 +22,9 @@
 
 FROM weitjong/toolchains:arm-cortex_a15-linux-gnueabihf AS arm-linux-gnueabihf
 
-RUN rm /home/ng/x-tools/arm-linux-gnueabihf/build.log.bz2
-
 ##
 
 FROM weitjong/toolchains:aarch64-unknown-linux-gnu AS aarch64-linux-gnu
-
-RUN rm /home/ng/x-tools/aarch64-linux-gnu/build.log.bz2
 
 ##
 
@@ -49,7 +45,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qem
     # Install Urho3D prerequisite packages in chroot jail
  && chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libgles2-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev' \
     \
- && mkdir -p /arm-sysroot/usr && for d in lib usr/include usr/lib; do mv /sysroot/$d /arm-sysroot/$(dirname $d); done
+ && mkdir -p /arm-sysroot/usr && for d in lib usr/include usr/lib; do mv /sysroot/$d /arm-sysroot/$(dirname $d); done \
+    \
+    # Fix broken symlinks
+ && for l in $(find /arm-sysroot -xtype l -name \*.so); do ln -sf $(basename $(readlink $l)) $l; done
 
 ##
 
@@ -70,7 +69,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qem
     # Install Urho3D prerequisite packages in chroot jail
  && chroot /sysroot /bin/bash -c 'apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends libgles2-mesa-dev libx11-dev libxcursor-dev libxext-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev libasound2-dev libpulse-dev libdbus-1-dev libreadline6-dev libssl-dev libudev-dev' \
     \
- && mkdir -p /arm64-sysroot/usr && for d in lib usr/include usr/lib; do mv /sysroot/$d /arm64-sysroot/$(dirname $d); done
+ && mkdir -p /arm64-sysroot/usr && for d in lib usr/include usr/lib; do mv /sysroot/$d /arm64-sysroot/$(dirname $d); done \
+    \
+    # Fix broken symlinks
+ && for l in $(find /arm64-sysroot -xtype l -name \*.so); do ln -sf $(basename $(readlink $l)) $l; done
 
 ##
 
@@ -78,18 +80,14 @@ FROM urho3d/dockerized:latest
 
 ENV ARM32_PREFIX=/arm-tools/arm-linux-gnueabihf/bin/arm-linux-gnueabihf \
     ARM64_PREFIX=/arm-tools/aarch64-linux-gnu/bin/aarch64-linux-gnu \
-    ARM32_SYSROOT=/arm-tools/arm-linux-gnueabihf/arm-linux-gnueabihf/sysroot \
-    ARM64_SYSROOT=/arm-tools/aarch64-linux-gnu/aarch64-linux-gnu/sysroot
+    ARM32_SYSROOT=/arm-sysroot \
+    ARM64_SYSROOT=/arm64-sysroot
 
 # Copy prepared toolchain and sysroot from the builder stages
-COPY --from=arm-linux-gnueabihf /home/ng/x-tools/ /arm-tools/
-COPY --from=aarch64-linux-gnu /home/ng/x-tools/ /arm-tools/
-COPY --from=arm-sysroot-builder /arm-sysroot/ /arm-tools/arm-linux-gnueabihf/arm-linux-gnueabihf/sysroot/
-COPY --from=arm64-sysroot-builder /arm64-sysroot/ /arm-tools/aarch64-linux-gnu/aarch64-linux-gnu/sysroot/
-
-# Fix broken symlinks
-RUN for l in $(find $ARM32_SYSROOT -xtype l -name \*.so); do ln -sf $(basename $(readlink $l)) $l; done \
- && for l in $(find $ARM64_SYSROOT -xtype l -name \*.so); do ln -sf $(basename $(readlink $l)) $l; done
+COPY --from=arm-linux-gnueabihf /toolchain/ /arm-tools/
+COPY --from=aarch64-linux-gnu /toolchain/ /arm-tools/
+COPY --from=arm-sysroot-builder /arm-sysroot/ /arm-sysroot/
+COPY --from=arm64-sysroot-builder /arm64-sysroot/ /arm64-sysroot/
 
 COPY sysroot/ /
 
