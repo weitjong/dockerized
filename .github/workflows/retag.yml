@@ -31,13 +31,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [native, mingw, android, rpi, arm, web]
+        platform: [base, native, mingw, android, rpi, arm, web]
     env:
-      tag: urho3d/dockerized-${{ matrix.platform }}
+      dbe: urho3d/dockerized-${{ matrix.platform }}
     steps:
       - name: Retag
         run: |
           echo ${{ secrets.DOCKER_PASSWORD }} |docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          tag=${dbe/-base}
           docker pull $tag
           docker tag $tag $tag:master
           docker push $tag:master
