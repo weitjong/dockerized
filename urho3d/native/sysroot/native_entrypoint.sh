@@ -21,8 +21,8 @@
 # THE SOFTWARE.
 #
 
-# Select the compiler toolchain based on the URHO3D_64BIT env var
-if [[ "$URHO3D_64BIT" == "0" ]]; then export CMAKE_PREFIX_PATH=/usr/lib/i386-linux-gnu; fi
+# Select the compiler toolchain based on the ARCH env var
+if [[ "$ARCH" == "32bit" ]]; then export CMAKE_PREFIX_PATH=/usr/lib/i386-linux-gnu; fi
 
 # Execute the command chain
 exec "$@"

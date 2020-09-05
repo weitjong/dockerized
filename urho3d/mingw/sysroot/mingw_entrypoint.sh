@@ -21,8 +21,8 @@
 # THE SOFTWARE.
 #
 
-# Select the compiler toolchain based on the URHO3D_64BIT env var
-if [[ "$URHO3D_64BIT" == "0" ]]; then
+# Select the compiler toolchain based on the ARCH env var
+if [[ "$ARCH" == "32bit" ]]; then
     export MINGW_PREFIX=/usr/bin/i686-w64-mingw32 \
            DIRECTX_INC_SEARCH_PATHS=/usr/i686-w64-mingw32/include \
            DIRECTX_LIB_SEARCH_PATHS=/usr/i686-w64-mingw32/lib

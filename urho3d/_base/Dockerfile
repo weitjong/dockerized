@@ -33,7 +33,6 @@ ARG cmake_version=3.17.3
 ARG time_zone=Asia/Singapore
 
 ENV USE_CCACHE=1 CCACHE_SLOPPINESS=pch_defines,time_macros CCACHE_COMPRESS=1 \
-    URHO3D_LUAJIT=1 \
     HOST_UID=1000 HOST_GID=1000 \
     DEBIAN_FRONTEND=noninteractive TZ=$time_zone
 

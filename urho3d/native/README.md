@@ -44,7 +44,7 @@ $ docker build --tag=urho3d/dockerized-native .
 There are two compiler toolchains to choose from: GCC (default) and Clang. Both
 compiler toolchains are 64-bit (default) and 32-bit capable. To run with Clang
 compiler toolchain, set the following environment variable: `CC=clang CXX=clang++`.
-To run with 32-bit compiler toolchain variant, set `URHO3D_64BIT=0`. For example,
+To run with 32-bit compiler toolchain variant, set `ARCH=32bit`. For example,
 to choose 32-bit Clang compiler toolchain then run the native DBE as below.
 
 ```
@@ -53,7 +53,7 @@ $ docker run -it --rm \
     -e PROJECT_DIR=/local-path/to/urho3d \
     -e HOST_UID=1234 -e HOST_GID=1234 \
     -e CC=clang -e CXX=clang++ \
-    -e URHO3D_64BIT=0 \
+    -e ARCH=32bit \
     urho3d/dockerized-native
 ```
 
@@ -71,7 +71,7 @@ $ docker run -it --rm \
     -e PROJECT_DIR=/local-path/to/urho3d \
     -e HOST_UID=1234 -e HOST_GID=1234 \
     -e CC=clang -e CXX=clang++ \
-    -e URHO3D_64BIT=0 \
+    -e ARCH=32bit \
     -e URHO3D_LIB_TYPE=SHARED \
     urho3d/dockerized-native
 ```
@@ -82,5 +82,5 @@ The last example can be easily achieved using the convenient shell script in
 Urho3D project.
 
 ```
-$ CC=clang CXX=clang++ URHO3D_64BIT=0 URHO3D_LIB_TYPE=SHARED script/dockerized.sh native
+$ CC=clang CXX=clang++ ARCH=32bit URHO3D_LIB_TYPE=SHARED script/dockerized.sh native
 ```

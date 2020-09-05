@@ -21,8 +21,8 @@
 # THE SOFTWARE.
 #
 
-# Select the compiler toolchain based on the URHO3D_64BIT env var
-if [[ "$URHO3D_64BIT" == "0" ]]; then
+# Select the compiler toolchain based on the ARCH env var
+if [[ "$ARCH" == "32bit" ]]; then
     export RPI_PREFIX=$RPI32_PREFIX RPI_SYSROOT=$RPI32_SYSROOT
 else
     export RPI_PREFIX=$RPI64_PREFIX RPI_SYSROOT=$RPI64_SYSROOT
