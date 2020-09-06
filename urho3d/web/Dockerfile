@@ -24,9 +24,8 @@ FROM urho3d/dockerized:latest
 
 ARG VERSION=latest
 
-ENV EMSDK=/emsdk-master \
-    EMCC_SKIP_SANITY_CHECK=1 \
-    EMSCRIPTEN_ALLOW_NEWER_PYTHON=1
+ENV PLATFORM=web \
+    EMSDK=/emsdk-master EMCC_SKIP_SANITY_CHECK=1
 
 RUN apt-get update && apt-get install -y --no-install-recommends default-jre libxml2 python3 python3-distutils \
  && update-alternatives --install /usr/bin/python python /usr/bin/python3 3 \
@@ -41,6 +40,6 @@ COPY sysroot/ /
 
 ENTRYPOINT ["/entrypoint.sh", "/web_entrypoint.sh"]
 
-CMD rake cmake web && rake make web
+CMD ["/usr/bin/rake"]
 
 # vi: set ts=4 sw=4 expandtab:

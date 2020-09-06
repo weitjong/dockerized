@@ -22,12 +22,14 @@
 
 FROM urho3d/dockerized:latest
 
+ENV PLATFORM=mingw
+
 RUN apt-get update && apt-get install -y --no-install-recommends mingw-w64 && apt-get clean
 
 COPY sysroot/ /
 
 ENTRYPOINT ["/entrypoint.sh", "/mingw_entrypoint.sh"]
 
-CMD rake cmake mingw && rake make mingw
+CMD ["/usr/bin/rake"]
 
 # vi: set ts=4 sw=4 expandtab:

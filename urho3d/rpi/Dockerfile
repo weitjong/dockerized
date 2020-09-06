@@ -65,10 +65,9 @@ RUN rm -rf /sysroot/home \
 
 FROM urho3d/dockerized:latest
 
-ENV RPI32_PREFIX=/rpi-tools/arm-linux-gnueabihf/bin/arm-linux-gnueabihf \
-    RPI64_PREFIX=/rpi-tools/aarch64-linux-gnu/bin/aarch64-linux-gnu \
-    RPI32_SYSROOT=/rpi-sysroot \
-    RPI64_SYSROOT=/rpi64-sysroot
+ENV PLATFORM=rpi \
+    RPI32_PREFIX=/rpi-tools/arm-linux-gnueabihf/bin/arm-linux-gnueabihf RPI32_SYSROOT=/rpi-sysroot \
+    RPI64_PREFIX=/rpi-tools/aarch64-linux-gnu/bin/aarch64-linux-gnu RPI64_SYSROOT=/rpi64-sysroot
 
 # Copy prepared toolchain and sysroot from the builder stages
 COPY --from=arm-linux-gnueabihf /toolchain/ /rpi-tools/
@@ -80,6 +79,6 @@ COPY sysroot/ /
 
 ENTRYPOINT ["/entrypoint.sh", "/rpi_entrypoint.sh"]
 
-CMD rake cmake rpi && rake make rpi
+CMD ["/usr/bin/rake"]
 
 # vi: set ts=4 sw=4 expandtab:

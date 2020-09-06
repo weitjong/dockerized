@@ -27,7 +27,8 @@ ARG tool_version=29.0.2
 ARG ndk_version=21.3.6528147
 ARG platforms=18,21,30
 
-ENV ANDROID_HOME=/android-sdk ANDROID_CCACHE=/usr/bin/ccache
+ENV PLATFORM=android \
+    ANDROID_HOME=/android-sdk ANDROID_CCACHE=/usr/bin/ccache
 
 RUN apt-get update && apt-get install -y --no-install-recommends openjdk-8-jdk ninja-build \
     \
@@ -57,6 +58,6 @@ COPY sysroot/ /
 
 ENTRYPOINT ["/entrypoint.sh", "/android_entrypoint.sh"]
 
-CMD ["./gradlew", "build"]
+CMD ["/usr/bin/rake"]
 
 # vi: set ts=4 sw=4 expandtab:

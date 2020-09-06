@@ -55,6 +55,6 @@ COPY sysroot/ /
 
 ENTRYPOINT ["/entrypoint.sh", "/native_entrypoint.sh"]
 
-CMD rake cmake && rake make
+CMD ["/usr/bin/rake"]
 
 # vi: set ts=4 sw=4 expandtab:

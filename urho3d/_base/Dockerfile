@@ -61,6 +61,6 @@ COPY sysroot/ /
 
 ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["/bin/bash"]
+CMD ["/usr/bin/bash"]
 
 # vi: set ts=4 sw=4 expandtab:

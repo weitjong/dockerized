@@ -78,10 +78,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends lsb-release qem
 
 FROM urho3d/dockerized:latest
 
-ENV ARM32_PREFIX=/arm-tools/arm-linux-gnueabihf/bin/arm-linux-gnueabihf \
-    ARM64_PREFIX=/arm-tools/aarch64-linux-gnu/bin/aarch64-linux-gnu \
-    ARM32_SYSROOT=/arm-sysroot \
-    ARM64_SYSROOT=/arm64-sysroot
+ENV PLATFORM=arm \
+    ARM32_PREFIX=/arm-tools/arm-linux-gnueabihf/bin/arm-linux-gnueabihf ARM32_SYSROOT=/arm-sysroot \
+    ARM64_PREFIX=/arm-tools/aarch64-linux-gnu/bin/aarch64-linux-gnu ARM64_SYSROOT=/arm64-sysroot
 
 # Copy prepared toolchain and sysroot from the builder stages
 COPY --from=arm-linux-gnueabihf /toolchain/ /arm-tools/
@@ -93,6 +92,6 @@ COPY sysroot/ /
 
 ENTRYPOINT ["/entrypoint.sh", "/arm_entrypoint.sh"]
 
-CMD rake cmake arm && rake make arm
+CMD ["/usr/bin/rake"]
 
 # vi: set ts=4 sw=4 expandtab:
