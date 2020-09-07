@@ -23,9 +23,9 @@
 
 # Select the compiler toolchain based on the ARCH env var
 if [[ "$ARCH" == "32bit" ]]; then
-    export RPI_PREFIX=$RPI32_PREFIX RPI_SYSROOT=$RPI32_SYSROOT
+    export RPI_PREFIX=$RPI32_PREFIX RPI_SYSROOT=$RPI32_SYSROOT RPI_ABI=RPI3
 else
-    export RPI_PREFIX=$RPI64_PREFIX RPI_SYSROOT=$RPI64_SYSROOT
+    export RPI_PREFIX=$RPI64_PREFIX RPI_SYSROOT=$RPI64_SYSROOT RPI_ABI=RPI4
 fi
 
 # Custom ccache symlinks update
