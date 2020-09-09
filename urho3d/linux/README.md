@@ -20,9 +20,9 @@
   THE SOFTWARE.
 -->
 
-# Native dockerized build environment for Urho3D
+# Linux dockerized build environment for Urho3D
 
-This branch of the repo contains the information to build and run the native DBE
+This branch of the repo contains the information to build and run the Linux DBE
 for Urho3D.
 
 Although the main purpose of this docker image is to build Urho3D project, any
@@ -36,7 +36,7 @@ You do not need to build this docker image yourself unless you want to change th
 default locale by building it from a custom base image using alternative locale. 
 
 ```
-$ docker build --tag=urho3d/dockerized-native .
+$ docker build --tag=urho3d/dockerized-linux .
 ```
 
 ## Running
@@ -45,7 +45,7 @@ There are two compiler toolchains to choose from: GCC (default) and Clang. Both
 compiler toolchains are 64-bit (default) and 32-bit capable. To run with Clang
 compiler toolchain, set the following environment variable: `CC=clang CXX=clang++`.
 To run with 32-bit compiler toolchain variant, set `ARCH=32bit`. For example,
-to choose 32-bit Clang compiler toolchain then run the native DBE as below.
+to choose 32-bit Clang compiler toolchain then run the Linux DBE as below.
 
 ```
 $ docker run -it --rm \
@@ -54,12 +54,12 @@ $ docker run -it --rm \
     -e HOST_UID=1234 -e HOST_GID=1234 \
     -e CC=clang -e CXX=clang++ \
     -e ARCH=32bit \
-    urho3d/dockerized-native
+    urho3d/dockerized-linux
 ```
 
-The container's entry point eventually calls the default command `rake cmake &&
-rake make`, which is equivalent to running `script/cmake_generic.sh build/native
-&& cd build/native && make` command. When the container finishes running, all the
+The container's entry point eventually calls the command `rake` with the default,
+task, which is equivalent to running `script/cmake_generic.sh build/linux
+&& cd build/linux && make` command. When the container finishes running, all the
 build artifacts can be found in the build tree. Other build options supported by
 Urho3D build system can be passed when running the container too by using "-e"
 flag. For example to build a shared library type, one can run the container as
@@ -73,7 +73,7 @@ $ docker run -it --rm \
     -e CC=clang -e CXX=clang++ \
     -e ARCH=32bit \
     -e URHO3D_LIB_TYPE=SHARED \
-    urho3d/dockerized-native
+    urho3d/dockerized-linux
 ```
 
 ## Running using convenient shell script in Urho3D project
@@ -82,5 +82,5 @@ The last example can be easily achieved using the convenient shell script in
 Urho3D project.
 
 ```
-$ CC=clang CXX=clang++ ARCH=32bit URHO3D_LIB_TYPE=SHARED script/dockerized.sh native
+$ CC=clang CXX=clang++ ARCH=32bit URHO3D_LIB_TYPE=SHARED script/dockerized.sh linux
 ```

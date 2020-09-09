@@ -53,7 +53,7 @@ RUN apt-get install -y --no-install-recommends \
 
 COPY sysroot/ /
 
-ENTRYPOINT ["/entrypoint.sh", "/native_entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh", "/linux_entrypoint.sh"]
 
 CMD ["/usr/bin/rake"]
 

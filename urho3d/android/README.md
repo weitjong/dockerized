@@ -37,9 +37,10 @@ default build arguments.
 
 |Build arg|Default|Description|
 |---------|-------|-----------|
-|tool_url|https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip|Android SDK Command line tools|
-|tool_version|8.0.3|Build tool version|
-|platforms|17,21,28|To keep the docker image small, only the listed API levels will be kept|
+|tool_url|https://dl.google.com/android/repository/commandlinetools-linux-6609375_latest.zip|Android SDK Command line tools|
+|tool_version|29.0.2|Build tool version|
+|ndk_version|21.3.6528147|NDK (side by side) version|
+|platforms|18,21,30|To keep the docker image small, only the listed API levels will be kept|
 
 ```
 $ docker build --build-arg platforms=21,28 --tag=urho3d/dockerized-android .
@@ -49,8 +50,8 @@ $ docker build --build-arg platforms=21,28 --tag=urho3d/dockerized-android .
 
 The Clang compiler toolchain provided by NDK supports 4 ABIs: x86, x86_64,
 armeabi-v7a, and arm64-v8a. By default The GCC compiler toolchain is not being 
-supported anymore. The container's entry point calls the default command
-`./gradlew build`, which by default build all the ABIs in one go. However, this will
+supported anymore. The container's entry point calls the command `rake` that delegates
+to `./gradlew build`, which by default build all the ABIs in one go. However, this will
 consume a lot of memory (>8GB). In order to perform a split ABI build, you can pass
 the command to run by the container explicitly with extra parameter for Gradle. For
 example, run the Android DBE as below to perform a armeabi-v7a build.

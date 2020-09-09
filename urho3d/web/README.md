@@ -54,8 +54,8 @@ $ docker run -it --rm \
     urho3d/dockerized-web
 ```
 
-The container's entry point eventually calls the default command `rake cmake &&
-rake make`, which is equivalent to running `script/cmake_generic.sh build/web
+The container's entry point eventually calls the command `rake` with the default
+task, which is equivalent to running `script/cmake_generic.sh build/web -D WEB=1
 && cd build/web && make` command. When the container finishes running, all the
 build artifacts can be found in the build tree. Other build options supported by
 Urho3D build system can be passed when running the container too by using "-e"

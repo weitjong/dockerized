@@ -61,7 +61,7 @@ jobs:
       fail-fast: false
       matrix:
         project: [urho3d]
-        platform: [native, mingw, android, web]
+        platform: [linux, mingw, android, web]
         include:
           - {project: urho3d, platform: rpi, chroot: chroot}
           - {project: urho3d, platform: arm, chroot: chroot}

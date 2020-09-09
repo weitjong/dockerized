@@ -32,7 +32,7 @@ descendant image targeting a new platform.
 This repo has a number of branches, one for each target platform. For more detail
 see their individual README.md file.
 
-- [Native](https://hub.docker.com/r/urho3d/dockerized-native/)
+- [Linux](https://hub.docker.com/r/urho3d/dockerized-linux/)
 - [MinGW](https://hub.docker.com/r/urho3d/dockerized-mingw/)
 - [Android](https://hub.docker.com/r/urho3d/dockerized-android/)
 - [Raspberry-Pi](https://hub.docker.com/r/urho3d/dockerized-rpi/)

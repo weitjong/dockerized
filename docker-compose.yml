@@ -25,9 +25,9 @@ services:
   urho3d-base:
     build: urho3d/_base
     image: weitjong/dockerized:urho3d-base
-  urho3d-native:
-    build: urho3d/native
-    image: weitjong/dockerized:urho3d-native
+  urho3d-linux:
+    build: urho3d/linux
+    image: weitjong/dockerized:urho3d-linux
     depends_on: [urho3d-base]
   urho3d-mingw:
     build: urho3d/mingw
