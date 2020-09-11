@@ -41,7 +41,7 @@ RUN dpkg --add-architecture i386 && apt-get update && apt-get install -y --no-in
     # Virtual framebuffer for CI testing
     xvfb \
     \
-    # 32-bit support, use 'ARCH=32bit' to do 32-bit build
+    # 32-bit support, use 'ARCH=32bit' or 'ARCH=32' to do 32-bit build
     libxrandr-dev:i386 libglapi-mesa:i386 libgl1-mesa-glx:i386 libgl1-mesa-dev:i386 libxext-dev:i386 libxrender-dev:i386
 
 # Quick workaround to avoid "E: Could not configure 'libc6:i386'" by separating the installation into two layers

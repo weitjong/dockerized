@@ -22,7 +22,7 @@
 #
 
 # Select the compiler toolchain based on the ARCH env var
-if [[ "$ARCH" == "32bit" ]]; then
+if [[ "${ARCH/bit}" == "32" ]]; then
     export MINGW_PREFIX=/usr/bin/i686-w64-mingw32 \
            DIRECTX_INC_SEARCH_PATHS=/usr/i686-w64-mingw32/include \
            DIRECTX_LIB_SEARCH_PATHS=/usr/i686-w64-mingw32/lib

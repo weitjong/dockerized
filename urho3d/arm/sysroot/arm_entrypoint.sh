@@ -22,7 +22,7 @@
 #
 
 # Select the compiler toolchain based on the ARCH env var
-if [[ "$ARCH" == "32bit" ]]; then
+if [[ "${ARCH/bit}" == "32" ]]; then
     export ARM_PREFIX=$ARM32_PREFIX ARM_SYSROOT=$ARM32_SYSROOT
 else
     export ARM_PREFIX=$ARM64_PREFIX ARM_SYSROOT=$ARM64_SYSROOT
