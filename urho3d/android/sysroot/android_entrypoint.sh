@@ -24,6 +24,9 @@
 if [[ "$container" == "podman" ]]; then
     # Set Gradle user home to a dir mounted from pod's volume so Gradle caches are persisted
     export GRADLE_USER_HOME=~/.gradle
+    # Set Maven local repository to a mounted dir for similar reason as above
+    mkdir -p /root/.m2
+    echo '<settings><localRepository>/home/urho3d/.m2/repository</localRepository></settings>' >/root/.m2/settings.xml
 else
     # Keep Android's sdkmanager happy
     mkdir -p ~/.android && touch ~/.android/repositories.cfg
