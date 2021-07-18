@@ -22,27 +22,27 @@
 
 ---
 
-name: Urho3D DBE retagger
-on: [ workflow_dispatch ]
+name: Yearly
+on:
+  workflow_dispatch:
+  schedule: [ cron: '0 0 1 1 *' ]
 jobs:
-  project:
-    name: Urho3D
+  yearly:
+    name: Happy New Year
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [ base, linux, mingw, android, rpi, arm, web ]
-    env:
-      dbe: urho3d/dockerized-${{ matrix.platform }}
     steps:
-      - name: Retag
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.WORKFLOW_TOKEN }}
+      - name: Bump license year
         run: |
-          echo ${{ secrets.DOCKER_PASSWORD }} |docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-          tag=${dbe/-base}
-          docker pull $tag
-          docker tag $tag $tag:master
-          docker push $tag:master
-          docker logout
+          git grep -lP '2018-[0-9]{4}' |xargs perl -pi -e "s/2018-[0-9]{4}/2018-$(date +'%Y')/g"
+          git config user.name '${{ secrets.USER_NAME }}'
+          git config user.email ${{ secrets.USER_EMAIL }}
+          git add .
+          git commit -m 'Bump license year.'
+          git push
 
 ...
 
