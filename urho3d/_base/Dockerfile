@@ -20,7 +20,7 @@
 # THE SOFTWARE.
 #
 
-FROM ubuntu:latest
+FROM ubuntu:rolling
 
 LABEL maintainer="Yao Wei Tjong <weitjong@gmail.com>" \
       description="Dockerized build environment for Urho3D" \
@@ -29,14 +29,14 @@ LABEL maintainer="Yao Wei Tjong <weitjong@gmail.com>" \
       retag-binary-repo=https://hub.docker.com/u/urho3d
 
 ARG lang=en_US.UTF-8
-ARG cmake_version=3.17.3
+ARG cmake_version=3.21.1
 ARG time_zone=Asia/Singapore
 
 ENV USE_CCACHE=1 CCACHE_SLOPPINESS=pch_defines,time_macros CCACHE_COMPRESS=1 \
     HOST_UID=1000 HOST_GID=1000 \
     DEBIAN_FRONTEND=noninteractive TZ=$time_zone
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt update && apt install -y --no-install-recommends \
     # Essential
     build-essential ccache git g++-multilib \
     \
@@ -53,7 +53,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
  && locale-gen $lang && update-locale LANG=$lang \
     \
     # Clean up
- && apt-get clean
+ && apt clean
 
 VOLUME /home/urho3d
 
