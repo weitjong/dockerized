@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2020 Yao Wei Tjong. All rights reserved.
+# Copyright (c) 2018-2021 Yao Wei Tjong. All rights reserved.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,34 +20,34 @@
 # THE SOFTWARE.
 #
 
-version: '3.7'
+version: 3.8
 services:
-  urho3d-base:
-    build: urho3d/_base
+  base:
+    build: _base
     image: weitjong/dockerized:urho3d-base
-  urho3d-linux:
-    build: urho3d/linux
-    image: weitjong/dockerized:urho3d-linux
-    depends_on: [urho3d-base]
-  urho3d-mingw:
-    build: urho3d/mingw
-    image: weitjong/dockerized:urho3d-mingw
-    depends_on: [urho3d-base]
-  urho3d-android:
-    build: urho3d/android
+  android:
+    build: android
     image: weitjong/dockerized:urho3d-android
-    depends_on: [urho3d-base]
-  urho3d-rpi:
-    build: urho3d/rpi
-    image: weitjong/dockerized:urho3d-rpi
-    depends_on: [urho3d-base]
-  urho3d-arm:
-    build: urho3d/arm
+    depends_on: [base]
+  arm:
+    build: arm
     image: weitjong/dockerized:urho3d-arm
-    depends_on: [urho3d-base]
-  urho3d-web:
-    build: urho3d/web
+    depends_on: [base]
+  linux:
+    build: linux
+    image: weitjong/dockerized:urho3d-linux
+    depends_on: [base]
+  mingw:
+    build: mingw
+    image: weitjong/dockerized:urho3d-mingw
+    depends_on: [base]
+  rpi:
+    build: rpi
+    image: weitjong/dockerized:urho3d-rpi
+    depends_on: [base]
+  web:
+    build: web
     image: weitjong/dockerized:urho3d-web
-    depends_on: [urho3d-base]
+    depends_on: [base]
 
 # vi: set ts=2 sw=2 expandtab:
