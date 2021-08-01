@@ -20,29 +20,11 @@
 # THE SOFTWARE.
 #
 
----
-
-name: Yearly
-on:
-  schedule: [ cron: '0 0 1 1 *' ]
-jobs:
-  yearly:
-    name: Happy New Year
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.WORKFLOW_TOKEN }}
-      - name: Bump license year
-        run: |
-          git grep -lP '2018-[0-9]{4}' |xargs perl -pi -e "s/2018-[0-9]{4}/2018-$(date +'%Y')/g"
-          git config user.name '${{ secrets.USER_NAME }}'
-          git config user.email ${{ secrets.USER_EMAIL }}
-          git add .
-          git commit -m 'Bump license year.'
-          git push
-
-...
+task :parse, [:key, :value] do |_, args|
+  abort %q{Usage: parse[key,'space-separated values']} unless args[:key]
+  args.with_defaults(:value => '')
+  require 'json'
+  puts "::set-output name=#{args[:key]}::#{args[:value].split.to_json}"
+end
 
 # vi: set ts=2 sw=2 expandtab:
