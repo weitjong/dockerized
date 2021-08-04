@@ -20,11 +20,12 @@
 # THE SOFTWARE.
 #
 
-FROM urho3d/dockerized:latest
+FROM weitjong/dockerized:urho3d-base
 
-RUN dpkg --add-architecture i386 && apt-get update && apt-get install -y --no-install-recommends \
+RUN dpkg --add-architecture i386 && apt update && apt install -y --no-install-recommends \
     # Display server
     libgl1-mesa-dev libxcursor-dev libxi-dev libxinerama-dev libxrandr-dev libxrender-dev libxss-dev libxxf86vm-dev \
+    libwayland-dev libxkbcommon-dev wayland-protocols wayland-scanner++ \
     \
     # Sound server
     libasound2-dev libpulse-dev \
@@ -45,11 +46,11 @@ RUN dpkg --add-architecture i386 && apt-get update && apt-get install -y --no-in
     libxrandr-dev:i386 libglapi-mesa:i386 libgl1-mesa-glx:i386 libgl1-mesa-dev:i386 libxext-dev:i386 libxrender-dev:i386
 
 # Quick workaround to avoid "E: Could not configure 'libc6:i386'" by separating the installation into two layers
-RUN apt-get install -y --no-install-recommends \
+RUN apt install -y --no-install-recommends \
     libglib2.0-dev:i386 libdbus-1-dev:i386 lib32readline6-dev libssl-dev:i386 libudev-dev:i386 \
     \
     # Clean up
- && apt-get clean
+ && apt clean
 
 COPY sysroot/ /
 
