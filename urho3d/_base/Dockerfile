@@ -28,30 +28,30 @@ LABEL maintainer="Yao Wei Tjong <weitjong@gmail.com>" \
       binary-repo=https://hub.docker.com/u/weitjong \
       retag-binary-repo=https://hub.docker.com/u/urho3d
 
-ARG lang=en_US.UTF-8
 ARG cmake_version=3.21.1
+ARG lang=en_US.UTF-8
 ARG time_zone=Asia/Singapore
 
 ENV USE_CCACHE=1 CCACHE_SLOPPINESS=pch_defines,time_macros CCACHE_COMPRESS=1 \
     HOST_UID=1000 HOST_GID=1000 \
     DEBIAN_FRONTEND=noninteractive TZ=$time_zone
 
-RUN apt update && apt install -y --no-install-recommends \
+RUN apt update && apt upgrade -y && apt install -y --no-install-recommends \
     # Essential
-    build-essential ccache git g++-multilib \
-    \
+    build-essential ccache git g++-multilib ninja-build \
+
     # Documentation
     doxygen graphviz locales \
-    \
+
     # Misc.
     openssh-client rake rsync sudo tzdata vim wget \
-    \
+
     # Download CMake directly from its provider
  && wget -qO- https://github.com/Kitware/CMake/releases/download/v$cmake_version/cmake-$cmake_version-Linux-x86_64.tar.gz |tar --strip-components=1 -xzC /usr/local \
-    \
+
     # Setup default locale
  && locale-gen $lang && update-locale LANG=$lang \
-    \
+
     # Clean up
  && apt clean
 
