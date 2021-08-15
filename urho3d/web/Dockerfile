@@ -20,21 +20,21 @@
 # THE SOFTWARE.
 #
 
-FROM urho3d/dockerized:latest
+FROM weitjong/dockerized:urho3d-base
 
-ARG VERSION=latest
+ARG VERSION=tot
 
 ENV PLATFORM=web \
     EMSDK=/emsdk-master EMCC_SKIP_SANITY_CHECK=1
 
-RUN apt-get update && apt-get install -y --no-install-recommends default-jre libxml2 python3 python3-distutils \
+RUN apt update && apt upgrade -y && apt install -y --no-install-recommends default-jre libxml2 python3 python3-distutils \
  && update-alternatives --install /usr/bin/python python /usr/bin/python3 3 \
  && wget -qO- https://github.com/emscripten-core/emsdk/archive/master.tar.gz |tar -xz \
  && cd $EMSDK \
  && ./emsdk update-tags \
  && ./emsdk install $VERSION \
  && ./emsdk activate $VERSION \
- && apt-get clean
+ && apt clean
 
 COPY sysroot/ /
 
