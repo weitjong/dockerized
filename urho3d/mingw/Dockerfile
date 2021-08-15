@@ -20,11 +20,12 @@
 # THE SOFTWARE.
 #
 
-FROM urho3d/dockerized:latest
+FROM weitjong/dockerized:urho3d-base
 
 ENV PLATFORM=mingw
 
-RUN apt-get update && apt-get install -y --no-install-recommends mingw-w64 && apt-get clean
+RUN apt update && apt upgrade -y && apt install -y --no-install-recommends mingw-w64 \
+ && apt clean
 
 COPY sysroot/ /
 
