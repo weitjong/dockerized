@@ -21,11 +21,18 @@
 # THE SOFTWARE.
 #
 
+SAVED_EM_CACHE=$EM_CACHE
+
 # Use the EMSDK provided script to setup the environment
 source $EMSDK/emsdk_env.sh 2>/dev/null
 
-# Temporary workaround to let 'urho3d' user to lock the cache, see https://github.com/emscripten-core/emsdk/issues/535
-sudo find $(cat $EM_CONFIG <(echo 'print(EMSCRIPTEN_ROOT)') |python -)/cache -type f -name \*.lock -exec sudo chmod o+w {} \;
+# Restore the EM_CACHE as it has been wiped by EMSDK after 'source'
+export EM_CACHE=$SAVED_EM_CACHE
+
+# Copy the sysroot to $EM_CACHE on the docker volume, if it is not done yet
+if [[ ! -d $EM_CACHE ]]; then
+    sudo cp -rp $(cat $EM_CONFIG <(echo 'print(EMSCRIPTEN_ROOT)') |python -)/cache $EM_CACHE
+fi
 
 # Ensure ccache is being found first
 PATH=/usr/lib/ccache:$PATH:$(cat $EM_CONFIG <(echo 'print(LLVM_ROOT)') |python -)

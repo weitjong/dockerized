@@ -25,13 +25,12 @@ FROM weitjong/dockerized:urho3d-base
 ARG VERSION=tot
 
 ENV PLATFORM=web \
-    EMSDK=/emsdk-master EMCC_SKIP_SANITY_CHECK=1
+    EMSDK=/emsdk EMCC_SKIP_SANITY_CHECK=1 EM_CACHE=/home/urho3d/.cache/emscripten
 
 RUN apt update && apt upgrade -y && apt install -y --no-install-recommends default-jre libxml2 python3 python3-distutils \
  && update-alternatives --install /usr/bin/python python /usr/bin/python3 3 \
- && wget -qO- https://github.com/emscripten-core/emsdk/archive/master.tar.gz |tar -xz \
+ && git clone --depth 1 https://github.com/emscripten-core/emsdk.git $EMSDK \
  && cd $EMSDK \
- && ./emsdk update-tags \
  && ./emsdk install $VERSION \
  && ./emsdk activate $VERSION \
  && apt clean
