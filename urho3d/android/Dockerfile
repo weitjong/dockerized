@@ -20,39 +20,28 @@
 # THE SOFTWARE.
 #
 
-FROM urho3d/dockerized:latest
+FROM weitjong/dockerized:urho3d-base
 
-ARG tool_url=https://dl.google.com/android/repository/commandlinetools-linux-6609375_latest.zip
-ARG tool_version=29.0.2
-ARG ndk_version=21.3.6528147
-ARG platforms=18,21,30
+ARG tool_url=https://dl.google.com/android/repository/commandlinetools-linux-7583922_latest.zip
+ARG tool_version=31.0.0
+ARG ndk_version=23.0.7599858
+ARG platform=31
 
 ENV PLATFORM=android \
     ANDROID_HOME=/android-sdk ANDROID_CCACHE=/usr/bin/ccache
 
-RUN apt-get update && apt-get install -y --no-install-recommends openjdk-8-jdk ninja-build \
-    \
-    # Download Android SDK command line tools only
+RUN apt update && apt upgrade -y && apt install -y --no-install-recommends openjdk-8-jdk \
  && mkdir -p $ANDROID_HOME/cmdline-tools && cd $ANDROID_HOME/cmdline-tools && wget -qO- $tool_url |jar x \
-    \
-    # Fix missing configuration file
- && mkdir /root/.android && touch /root/.android/repositories.cfg \
-    \
-    # Install Android NDK and other build tools, excluding CMake
- && (while :; do echo 'y'; sleep 1; done) |bash $ANDROID_HOME/cmdline-tools/tools/bin/sdkmanager \
+ && echo 'y' |bash cmdline-tools/bin/sdkmanager \
         "build-tools;$tool_version"\
         "ndk;$ndk_version" \
         'platform-tools' \
-        $(bash -c "echo platforms\;android-{$platforms}") \
+        'cmdline-tools;latest' \
+        "platforms;android-$platform" \
         # Hack quiet mode for sdkmanager
         |grep -v '\[.*\]' \
-    \
-    # Strip-off some bits to reduce layer/image size
- && find $ANDROID_HOME/ndk/$ndk_version/platforms -mindepth 1 -maxdepth 1 \
-       |grep -Ev "\-($(bash -c 'echo ${platforms//,/\|}'))$" |xargs rm -rf \
-    \
-    # Clean up
- && apt-get clean
+ && rm -rf cmdline-tools \
+ && apt clean
 
 COPY sysroot/ /
 
