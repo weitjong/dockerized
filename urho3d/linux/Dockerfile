@@ -58,6 +58,7 @@ RUN dpkg --add-architecture i386 && apt update && apt upgrade -y && apt install 
     xvfb \
 
     # 32-bit support, use 'ARCH=32bit' or 'ARCH=32' to do 32-bit build
+    pkg-config-i686-linux-gnu \
     libgl1-mesa-dev:i386 libxcursor-dev:i386 libxi-dev:i386 libxinerama-dev:i386 libxrandr-dev:i386 libxrender-dev:i386 libxss-dev:i386 libxxf86vm-dev:i386 \
     libwayland-dev:i386 libxkbcommon-dev:i386 \
     libasound2-dev:i386 libpulse-dev:i386 \

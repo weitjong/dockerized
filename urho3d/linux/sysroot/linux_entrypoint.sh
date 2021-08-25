@@ -22,7 +22,10 @@
 #
 
 # Select the compiler toolchain based on the ARCH env var
-if [[ "${ARCH/bit}" == "32" ]]; then export CMAKE_PREFIX_PATH=/usr/lib/i386-linux-gnu; fi
+if [[ "${ARCH/bit}" == "32" ]]; then
+    export CMAKE_PREFIX_PATH=/usr/lib/i386-linux-gnu \
+           PKG_CONFIG=i686-linux-gnu-pkg-config
+fi
 
 # Execute the command chain
 exec "$@"
