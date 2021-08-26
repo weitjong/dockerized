@@ -30,7 +30,7 @@ ARG platform=31
 ENV PLATFORM=android \
     ANDROID_HOME=/android-sdk ANDROID_CCACHE=/usr/bin/ccache
 
-RUN apt update && apt upgrade -y && apt install -y --no-install-recommends openjdk-8-jdk \
+RUN apt update && apt upgrade -y && apt install -y --no-install-recommends openjdk-11-jdk-headless \
  && mkdir -p $ANDROID_HOME/cmdline-tools && cd $ANDROID_HOME/cmdline-tools && wget -qO- $tool_url |jar x \
  && echo 'y' |bash cmdline-tools/bin/sdkmanager \
         "build-tools;$tool_version"\
