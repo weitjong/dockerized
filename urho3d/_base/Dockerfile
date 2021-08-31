@@ -28,7 +28,7 @@ LABEL maintainer="Yao Wei Tjong <weitjong@gmail.com>" \
       binary-repo=https://hub.docker.com/u/weitjong \
       retag-binary-repo=https://hub.docker.com/u/urho3d
 
-ARG cmake_version=3.21.1
+ARG cmake_version=latest
 ARG lang=en_US.UTF-8
 ARG time_zone=Asia/Singapore
 
@@ -44,9 +44,13 @@ RUN apt update && apt upgrade -y && apt install -y --no-install-recommends \
     doxygen graphviz locales \
 
     # Misc.
-    openssh-client rake rsync sudo tzdata vim wget \
+    curl openssh-client rake rsync sudo tzdata vim wget \
 
     # Download CMake directly from its provider
+ && if [ "$cmake_version" = "latest" ]; then \
+      tag=$(curl -H 'Accept: application/vnd.github.v3+json' https://api.github.com/repos/Kitware/CMake/releases 2>/dev/null |grep tag_name |head -1 |cut -d\" -f4); \
+      cmake_version=${tag#v}; \
+    fi \
  && wget -qO- https://github.com/Kitware/CMake/releases/download/v$cmake_version/cmake-$cmake_version-Linux-x86_64.tar.gz |tar --strip-components=1 -xzC /usr/local \
 
     # Setup default locale
